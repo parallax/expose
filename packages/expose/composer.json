@@ -1,0 +1,29 @@
+{
+  "name": "parallax/expose",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Parallax",
+      "email": "hello@parall.ax"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=7.1",
+    "illuminate/support": ">=5.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "Parallax\\Expose\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Parallax\\Expose\\ExposeServiceProvider"
+      ]
+    }
+  }
+}
