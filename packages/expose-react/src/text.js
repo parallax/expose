@@ -2,15 +2,32 @@ import { h, Component } from 'preact'
 import { Subscribe, Container } from './unstated.js'
 import Location from './location.js'
 import dlv from 'dlv'
+import dset from 'dset'
+import { EditorState } from 'prosemirror-state'
+import { EditorView } from 'prosemirror-view'
+import { Schema, DOMParser } from 'prosemirror-model'
+import editor from './editor.js'
+
+// let schema = new Schema({
+//   nodes: {
+//     doc: { content: 'text*' },
+//     text: {
+//       group: 'inline'
+//     }
+//   },
+//   marks: {}
+// })
 
 class TextContainer extends Container {
-  constructor(initialValue) {
+  constructor(initialValue, location) {
     super()
     this.state = {
       value: initialValue || 'Lorem ipsum'
     }
+    this.location = location
   }
   set = value => {
+    dset(window.expose.data, this.location, value)
     this.setState({ value })
   }
 }
@@ -25,12 +42,59 @@ class Foo extends Component {
     } else {
       container = window.expose.containers[
         `${props.location}.${props.name}`
-      ] = new TextContainer(this.getValue())
+      ] = new TextContainer(this.getValue(), `${props.location}.${props.name}`)
     }
     this.state = { container }
   }
+  componentDidMount() {
+    let { schema, plugins } = editor(
+      this.props.allow || [],
+      `${this.props.location}.${this.props.name}`
+    )
+    this.schema = schema
+    this.plugins = plugins
+
+    this.editor = new EditorView(
+      { mount: this.root },
+      {
+        state: EditorState.create({
+          doc: DOMParser.fromSchema(schema).parse(this.root, {
+            preserveWhitespace: true
+          }),
+          plugins
+        })
+      }
+    )
+  }
   componentDidUpdate() {
-    this.state.container.set(this.getValue())
+    let val = this.getValue()
+    this.state.container.set(val)
+
+    let dom = document.createElement('div')
+    dom.innerHTML = val
+
+    console.log(val)
+
+    // this.editor.updateState(
+    //   EditorState.create({
+    //     plugins: this.editor.state.config.plugins,
+    //     doc: DOMParser.fromSchema(this.schema).parse(dom, {
+    //       preserveWhitespace: true
+    //     })
+    //   })
+    // )
+
+    // this.editor = new EditorView(
+    //   { mount: this.root },
+    //   {
+    //     state: EditorState.create({
+    //       doc: DOMParser.fromSchema(this.schema).parse(dom, {
+    //         preserveWhitespace: true
+    //       }),
+    //       plugins: this.plugins
+    //     })
+    //   }
+    // )
   }
   getValue() {
     return dlv(
@@ -43,9 +107,24 @@ class Foo extends Component {
     return (
       <Subscribe to={[this.state.container]}>
         {c => (
-          <div contentEditable onKeyUp={e => c.set(e.target.textContent)}>
-            {c.state.value}
-          </div>
+          <div
+            style={{
+              wordWrap: 'break-word',
+              whiteSpace: 'pre-wrap',
+              WebkitFontVariantLigatures: 'none',
+              fontVariantLigatures: 'none'
+            }}
+            onBlur={() => {
+              c.set(this.editor.dom.innerHTML)
+            }}
+            onMouseEnter={() => {
+              window.setHighlightedElement(this.root)
+            }}
+            dangerouslySetInnerHTML={{ __html: c.state.value }}
+            ref={ref =>
+              (this.root = ref)
+            } /*contentEditable onKeyUp={e => c.set(e.target.textContent)}*/
+          />
         )}
       </Subscribe>
     )

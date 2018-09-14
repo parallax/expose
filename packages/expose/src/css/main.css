@@ -216,6 +216,10 @@ table tbody tr:hover td:not(:first-child) {
   left: 3px;
   background: config('colors.purple');
   border-radius: config('borderRadius.sm');
+  opacity: 0;
+}
+.btn-group button.is-active::after {
+  opacity: 1;
 }
 
 @tailwind components;

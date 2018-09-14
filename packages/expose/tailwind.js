@@ -43,6 +43,7 @@ View the full documentation at https://tailwindcss.com.
 
 let colors = {
   inherit: 'inherit',
+  current: 'currentColor',
   transparent: 'transparent',
   black: '#282828',
   white: '#fff',
@@ -610,9 +611,7 @@ module.exports = {
   |
   */
 
-  svgFill: {
-    current: 'currentColor'
-  },
+  svgFill: colors,
 
   /*
   |-----------------------------------------------------------------------------

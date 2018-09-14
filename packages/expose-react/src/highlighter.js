@@ -11,7 +11,7 @@ export default class Highlighter extends Component {
 
     window.setHighlightedElement = this.foo
   }
-  foo = (el, state) => {
+  foo = (el, state = {}) => {
     let rect = el.getBoundingClientRect()
     let s = {
       ...state,
@@ -31,9 +31,10 @@ export default class Highlighter extends Component {
         isDescendant(el, this.state.el)
       ) {
       } else {
-        if (s.editableProps) {
+        if (typeof s.variantIndex === 'undefined') {
           s.variantIndex = undefined
-        } else if (typeof s.variantIndex !== 'undefined') {
+        }
+        if (typeof s.editableProps === 'undefined') {
           s.editableProps = null
         }
       }

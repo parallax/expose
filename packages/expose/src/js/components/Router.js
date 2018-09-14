@@ -26,6 +26,7 @@ let RouteContainer = posed.div({
 
 export default class Router extends React.Component {
   state = {
+    primary: true,
     preEnterPose: 'preEnter',
     exitPose: 'exit'
   }
@@ -53,12 +54,18 @@ export default class Router extends React.Component {
         ? { preEnterPose: 'exit', exitPose: 'preEnter' }
         : { preEnterPose: 'preEnter', exitPose: 'exit' }
 
-      this.setState(state, () => {
+      this.setState({ primary: true, ...state }, () => {
         history.navigate(to)
       })
     }
   }
+  static getDerivedStateFromProps({ primary }) {
+    return {
+      primary
+    }
+  }
   render() {
+    let { children, ...props } = this.props
     return (
       <div
         className="flex-none bg-grey-lighter flex flex-col relative"
@@ -109,8 +116,11 @@ export default class Router extends React.Component {
                   exitPose={this.state.exitPose}
                 >
                   <RouteContainer key={location.pathname}>
-                    <ReachRouter location={location}>
-                      {this.props.children}
+                    <ReachRouter
+                      location={location}
+                      primary={this.state.primary}
+                    >
+                      {children}
                     </ReachRouter>
                   </RouteContainer>
                 </PoseGroup>

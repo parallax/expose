@@ -6,6 +6,7 @@ import EditableOptions from './components/EditableOptions.js'
 import { Provider } from 'unstated'
 import BackLink from './components/BackLink.js'
 import '../css/main.css'
+import icons from './icons.js'
 
 window.Expose = {}
 
@@ -87,15 +88,63 @@ let BlogPosts = () => (
   </div>
 )
 
+let TextEditable = ({ textEditables, loc }) => {
+  let { editorView, commands } = textEditables[loc]
+  return (
+    <div className="p-6">
+      <BackLink to="/" />
+      <h2>Text Editable</h2>
+      <div className="btn-group flex border border-purple-dark rounded">
+        <div
+          className="-ml-px flex"
+          style={{ height: 35, width: 'calc(100% + 2px)' }}
+        >
+          {commands.map(command => {
+            let Icon = icons[command.name]
+            return (
+              <button
+                className={
+                  'appearance-none relative w-1/6 flex items-center justify-center border-0 rounded-none p-0 bg-transparent' +
+                  (command.active ? ' is-active' : '')
+                }
+                onMouseDown={e => {
+                  e.preventDefault()
+                  command.command(
+                    editorView.state,
+                    editorView.dispatch,
+                    editorView
+                  )
+                }}
+              >
+                <Icon
+                  className={
+                    'relative z-10 ' +
+                    (command.active ? 'fill-white' : 'fill-purple-dark')
+                  }
+                />
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 class App extends React.Component {
   state = {
+    manageFocus: true,
     editables: {},
     editableOptions: [],
-    editableStateContainer: null
+    editableStateContainer: null,
+    // textEditableEditorView: null,
+    // textEditableCommands: []
+    textEditables: {}
   }
   showEditableOptions = ({ location, options, stateContainer }) => {
     this.setState(
       state => ({
+        manageFocus: true,
         editables: {
           ...state.editables,
           [location]: { options, stateContainer }
@@ -112,14 +161,38 @@ class App extends React.Component {
     //   }
     // )
   }
+  showTextEditable = a => {
+    this.updateTextEditable(a, () => {
+      navigate('/text-editable/' + a.location)
+    })
+  }
+  updateTextEditable = ({ location, editor, commands }, cb) => {
+    this.setState(
+      state => ({
+        manageFocus: false,
+        // textEditableEditorView: editor,
+        // textEditableCommands: commands
+        textEditables: {
+          ...state.textEditables,
+          [location]: {
+            editorView: editor,
+            commands
+          }
+        }
+      }),
+      cb
+    )
+  }
   componentDidMount() {
     window.Expose.showEditableOptions = this.showEditableOptions
+    window.Expose.showTextEditable = this.showTextEditable
+    window.Expose.updateTextEditable = this.updateTextEditable
   }
   render() {
     return (
       <Provider>
         <div className="flex h-screen">
-          <Router>
+          <Router primary={this.state.manageFocus}>
             <Home path="/" />
             <PageOptions path="/page-options" />
             <BlogPosts path="/blog-posts" />
@@ -128,6 +201,12 @@ class App extends React.Component {
               editables={this.state.editables}
               // props={this.state.editableOptions}
               // stateContainer={this.state.editableStateContainer}
+            />
+            <TextEditable
+              path="/text-editable/:loc"
+              // editorView={this.state.textEditableEditorView}
+              // commands={this.state.textEditableCommands}
+              textEditables={this.state.textEditables}
             />
           </Router>
           <iframe src="/nocache" className="relative border-0 w-full" />
