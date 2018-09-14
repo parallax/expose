@@ -44,13 +44,25 @@ export default class Highlighter extends Component {
               right: -16,
               width: 32,
               height: 32,
-              background: 'blue',
-              pointerEvents: 'auto'
+              border: 0,
+              borderRadius: 0,
+              padding: 0,
+              background: '#453f56',
+              pointerEvents: 'auto',
+              boxShadow: '0px 4px 9px 0px rgba(0,0,0,0.39)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
             }}
             onClick={() => {
               this.state.stateContainer.add('text', this.state.variantIndex)
             }}
-          />
+          >
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="#fff">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+          </button>
         )}
         {this.state.editableProps && (
           <div
