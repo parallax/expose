@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "lerna bootstrap && lerna run bootstrap",
     "watch": "lerna run watch --parallel",
     "build": "lerna run build"
   },
