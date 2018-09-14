@@ -92,7 +92,8 @@ class RepeaterInner extends Component {
               window.setHighlightedElement(v, {
                 variantIndex: getElementIndex(v),
                 variants: this.props.children.map(n => n.attributes.name),
-                stateContainer: c
+                stateContainer: c,
+                editableProps: null
               })
               // let rect = v.getBoundingClientRect()
               // window.setHighlightState({
