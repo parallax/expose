@@ -1,0 +1,33 @@
+{
+  "name": "expose-react",
+  "version": "0.0.0",
+  "description": "",
+  "source": "lib/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "scripts": {
+    "build": "babel src --out-dir lib && microbundle",
+    "watch": "babel src --out-dir lib --watch & microbundle watch",
+    "start": "npm run watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "dlv": "^1.1.2",
+    "dset": "^1.0.1",
+    "microbundle": "^0.6.0",
+    "preact-context": "^1.0.2",
+    "sortablejs": "^1.7.0",
+    "preact": "^8.0.0",
+    "unstated": "^2.1.1"
+  },
+  "peerDependencies": {
+    "preact": "^8.0.0",
+    "unstated": "^2.1.1"
+  }
+}

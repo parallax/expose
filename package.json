@@ -1,6 +1,10 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "watch": "lerna run watch --parallel"
+  },
   "devDependencies": {
     "lerna": "^3.3.0"
   }

@@ -16,8 +16,12 @@ class ExposeServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/expose.php' => config_path('expose.php'),
         ]);
+        $this->publishes([
+            __DIR__ . '/../dist/expose.js' => public_path('vendor/expose/expose.js'),
+        ]);
 
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
+        $this->loadViewsFrom(__DIR__ . '/views', 'expose');
     }
 
     /**

@@ -1,0 +1,223 @@
+@tailwind preflight;
+/*
+@font-face {
+  font-family: 'Karla';
+  src: url('./fonts/karla-regular.woff2') format('woff2'),
+    url('./fonts/karla-regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Karla';
+  src: url('./fonts/karla-regular-italic.woff2') format('woff2'),
+    url('./fonts/karla-regular-italic.woff') format('woff');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Karla';
+  src: url('./fonts/karla-bold.woff2') format('woff2'),
+    url('./fonts/karla-bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Karla';
+  src: url('./fonts/karla-bold-italic.woff2') format('woff2'),
+    url('./fonts/karla-bold-italic.woff') format('woff');
+  font-weight: bold;
+  font-style: italic;
+}
+*/
+html {
+  font-size: 62.5%;
+}
+
+body {
+  background: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 1.6rem;
+  color: config('colors.purple-dark');
+}
+
+.outline-0 {
+  outline: 0;
+}
+
+.focus\:outline-0:focus {
+  outline: 0;
+}
+
+.sr-only,
+.sr-only-focusable:not(:focus):not(:active) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  white-space: nowrap;
+  clip-path: inset(100%);
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}
+
+:focus + .checkbox {
+  background: #fff;
+}
+
+:checked + .checkbox {
+  background: config('colors.purple')
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E")
+    center center no-repeat;
+  background-size: 16px 16px;
+  border-color: transparent;
+}
+
+table tbody td:first-child:focus-within ~ td,
+table tbody tr:hover td:not(:first-child) {
+  background: config('colors.purple-lighter');
+  color: config('colors.purple-bright');
+}
+
+.actions::before,
+.actions::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 50%;
+  margin-top: -6px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.actions::before {
+  right: 100%;
+  border-width: 6px 6px 6px 0;
+  border-color: transparent config('colors.purple-dark') transparent transparent;
+}
+
+.actions::after {
+  left: 100%;
+  border-width: 6px 0 6px 6px;
+  border-color: transparent transparent transparent config('colors.purple-dark');
+}
+
+.toolbar > button:not(:first-child) {
+  width: 33px;
+  border-left: 1px solid config('colors.purple-dark');
+}
+
+.toolbar > button:not(:first-child)::before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: -1px;
+  top: 50%;
+  height: 20px;
+  margin-top: -10px;
+  width: 1px;
+  background: config('colors.purple-light');
+}
+
+.toolbar--above::after,
+.toolbar--below::before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 50%;
+  margin-left: -6px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.toolbar--above::after {
+  top: 100%;
+  border-width: 6px 6px 0;
+  border-color: config('colors.purple-dark') transparent transparent;
+}
+
+.toolbar--below::before {
+  bottom: 100%;
+  border-width: 0 6px 6px;
+  border-color: transparent transparent config('colors.purple-dark');
+}
+
+.logo-container {
+  background: linear-gradient(
+    hsl(240, 20%, 96%) 0%,
+    hsla(240, 20%, 96%, 0.738) 19%,
+    hsla(240, 20%, 96%, 0.541) 34%,
+    hsla(240, 20%, 96%, 0.382) 47%,
+    hsla(240, 20%, 96%, 0.278) 56.5%,
+    hsla(240, 20%, 96%, 0.194) 65%,
+    hsla(240, 20%, 96%, 0.126) 73%,
+    hsla(240, 20%, 96%, 0.075) 80.2%,
+    hsla(240, 20%, 96%, 0.042) 86.1%,
+    hsla(240, 20%, 96%, 0.021) 91%,
+    hsla(240, 20%, 96%, 0.008) 95.2%,
+    hsla(240, 20%, 96%, 0.002) 98.2%,
+    hsla(240, 20%, 96%, 0) 100%
+  );
+}
+
+.logo-container::before {
+  content: '';
+  display: block;
+  position: absolute;
+  pointer-events: auto;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  background: config('colors.grey-lighter');
+  height: 100px;
+}
+
+.button-group {
+  display: inline-flex;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+:checked + .checked\:bg-purple-dark-10 {
+  background-color: config('colors.purple-dark-10');
+}
+
+.btn-group button:first-child {
+  margin-left: 0;
+}
+.btn-group button:first-child::before {
+  content: none;
+}
+.btn-group button::before,
+.btn-group button::after {
+  content: '';
+  display: block;
+  position: absolute;
+}
+.btn-group button::before {
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  width: 1px;
+  background: #212a38;
+  opacity: 0.2;
+}
+.btn-group button::after {
+  top: 2px;
+  right: 2px;
+  bottom: 2px;
+  left: 3px;
+  background: config('colors.purple');
+  border-radius: config('borderRadius.sm');
+}
+
+@tailwind components;
+
+@tailwind utilities;
