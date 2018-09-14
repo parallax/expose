@@ -4,7 +4,8 @@ export default class Highlighter extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      styles: null
+      styles: null,
+      el: null
     }
     window.setHighlightState = this.setState.bind(this)
 
@@ -12,15 +13,33 @@ export default class Highlighter extends Component {
   }
   foo = (el, state) => {
     let rect = el.getBoundingClientRect()
-    this.setState({
+    let s = {
       ...state,
+      el,
       styles: {
         top: `${rect.top - 10 + window.pageYOffset}px`,
         left: `${rect.left - 10}px`,
         width: `${rect.width + 20}px`,
         height: `${rect.height + 20}px`
       }
-    })
+    }
+
+    if (this.state.el) {
+      if (
+        this.state.el === el ||
+        isDescendant(this.state.el, el) ||
+        isDescendant(el, this.state.el)
+      ) {
+      } else {
+        if (s.editableProps) {
+          s.variantIndex = undefined
+        } else if (typeof s.variantIndex !== 'undefined') {
+          s.editableProps = null
+        }
+      }
+    }
+
+    this.setState(s)
     // state.editableStateContainer &&
     //   state.editableStateContainer.set({ color: 'red' })
   }
@@ -109,4 +128,15 @@ export default class Highlighter extends Component {
       </div>
     ) : null
   }
+}
+
+function isDescendant(parent, child) {
+  let node = child.parentNode
+  while (node !== null) {
+    if (node === parent) {
+      return true
+    }
+    node = node.parentNode
+  }
+  return false
 }
