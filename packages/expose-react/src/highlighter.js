@@ -5,13 +5,17 @@ export default class Highlighter extends Component {
     super(props)
     this.state = {
       styles: null,
-      el: null
+      el: null,
+      active: false
     }
-    window.setHighlightState = this.setState.bind(this)
-
-    window.setHighlightedElement = this.foo
   }
-  foo = (el, state = {}) => {
+  componentDidMount() {
+    window.setHighlightState = this.setState.bind(this)
+    window.setHighlightedElement = this.setHighlightedElement
+  }
+  setHighlightedElement = (el, state = {}) => {
+    if (this.state.active) return
+
     let rect = el.getBoundingClientRect()
     let s = {
       ...state,
@@ -102,17 +106,26 @@ export default class Highlighter extends Component {
                 appearance: 'none',
                 width: 32,
                 height: 32,
-                background: '#453f56',
+                background: this.state.active ? '#8360d6' : '#453f56',
                 border: 0,
                 borderRadius: 0,
                 padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: 'block',
+                position: 'relative',
                 cursor: 'pointer'
               }}
               onClick={() => {
+                if (this.state.active) {
+                  this.setState({ active: false })
+                  window.parent &&
+                    window.parent.Expose &&
+                    window.parent.Expose.closeEditableOptions()
+                  return
+                }
+
+                this.setState({ active: true })
                 window.parent &&
+                  window.parent.Expose &&
                   window.parent.Expose.showEditableOptions({
                     location: this.state.location,
                     options: this.state.editableProps,
@@ -120,9 +133,58 @@ export default class Highlighter extends Component {
                   })
               }}
             >
-              <svg width={16} height={16} viewBox="0 0 20 20" fill="#fff">
-                <path d="M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z" />
-              </svg>
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <svg
+                  width={16}
+                  height={16}
+                  viewBox="0 0 24 24"
+                  fill="#fff"
+                  style={{
+                    transition: 'opacity 0.25s, transform 0.25s',
+                    opacity: this.state.active ? 1 : 0,
+                    transform: this.state.active ? '' : 'scale(0.8)'
+                  }}
+                >
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </div>
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <svg
+                  width={16}
+                  height={16}
+                  viewBox="0 0 20 20"
+                  fill="#fff"
+                  style={{
+                    transition: 'opacity 0.25s, transform 0.25s',
+                    opacity: this.state.active ? 0 : 1,
+                    transform: this.state.active ? 'scale(0.8)' : ''
+                  }}
+                >
+                  <path d="M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z" />
+                </svg>
+              </div>
             </button>
           </div>
         )}

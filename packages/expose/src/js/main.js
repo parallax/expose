@@ -88,6 +88,9 @@ class App extends React.Component {
     //   }
     // )
   }
+  closeEditableOptions = () => {
+    navigate('/', true)
+  }
   showTextEditable = a => {
     this.updateTextEditable(a, () => {
       navigate('/text-editable/' + a.location)
@@ -112,6 +115,7 @@ class App extends React.Component {
   }
   componentDidMount() {
     window.Expose.showEditableOptions = this.showEditableOptions
+    window.Expose.closeEditableOptions = this.closeEditableOptions
     window.Expose.showTextEditable = this.showTextEditable
     window.Expose.updateTextEditable = this.updateTextEditable
   }
