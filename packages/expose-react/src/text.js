@@ -104,10 +104,12 @@ class Foo extends Component {
     )
   }
   render() {
+    let Tag = this.props.as || 'div'
+
     return (
       <Subscribe to={[this.state.container]}>
         {c => (
-          <div
+          <Tag
             style={{
               wordWrap: 'break-word',
               whiteSpace: 'pre-wrap',
