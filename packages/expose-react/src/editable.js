@@ -117,5 +117,32 @@ function getDefault(data) {
     if (typeof data.min !== 'undefined') return data.min
     return 0
   }
+  if (data.type === 'date' || data.type === 'datetime') {
+    if (typeof data.min !== 'undefined') return data.min
+    if (typeof data.max !== 'undefined') return data.max
+    let today = new Date()
+    let date = `${today.getFullYear()}-${pad(
+      `${today.getMonth() + 1}`,
+      '0',
+      2
+    )}-${pad(`${today.getDate()}`, '0', 2)}`
+    if (data.type === 'date') return date
+    return (
+      date +
+      'T' +
+      pad(`${today.getHours()}`, '0', 2) +
+      ':' +
+      pad(`${today.getMinutes()}`, '0', 2) +
+      ':00'
+    )
+  }
   if (data.type === 'text') return ''
+}
+
+function pad(str, padStr, length) {
+  return (repeat(padStr, length) + str).substring(str.length)
+}
+
+function repeat(str, length) {
+  return Array(length + 1).join(str)
 }

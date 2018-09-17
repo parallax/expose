@@ -3,6 +3,7 @@ import React from 'react'
 import { Subscribe } from 'unstated'
 import BackLink from './BackLink.js'
 import Page from './Page.js'
+import DatePicker from './DatePicker.js'
 
 class EditableProp extends React.Component {
   render() {
@@ -108,6 +109,28 @@ class EditableProp extends React.Component {
             ))}
           </ul>
         )
+        break
+      case 'date':
+        return (
+          <DatePicker
+            selected={this.props.value}
+            onChange={date => {
+              set(date.format('YYYY-MM-DD'))
+            }}
+          />
+        )
+        break
+      case 'datetime':
+        return (
+          <DatePicker
+            selected={this.props.value}
+            onChange={date => {
+              set(date.format('YYYY-MM-DDTHH:mm:00'))
+            }}
+            showTimeSelect
+          />
+        )
+        break
     }
   }
 }
