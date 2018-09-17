@@ -6,7 +6,8 @@ export default class Highlighter extends Component {
     this.state = {
       styles: null,
       el: null,
-      active: false
+      active: false,
+      showVariantList: false
     }
   }
   componentDidMount() {
@@ -20,6 +21,7 @@ export default class Highlighter extends Component {
     let s = {
       ...state,
       el,
+      showVariantList: false,
       styles: {
         top: `${rect.top - 10 + window.pageYOffset}px`,
         left: `${rect.left - 10}px`,
@@ -55,39 +57,97 @@ export default class Highlighter extends Component {
           position: 'absolute',
           border: '1px dashed #8360d6',
           pointerEvents: 'none',
+          transition: '250ms',
           ...this.state.styles
         }}
       >
-        {typeof this.state.variantIndex !== 'undefined' && (
-          <button
-            type="button"
-            style={{
-              appearance: 'none',
-              position: 'absolute',
-              bottom: -16,
-              right: -16,
-              width: 32,
-              height: 32,
-              border: 0,
-              borderRadius: 0,
-              padding: 0,
-              background: '#453f56',
-              pointerEvents: 'auto',
-              boxShadow: '0px 4px 9px 0px rgba(0,0,0,0.39)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer'
-            }}
-            onClick={() => {
-              this.state.stateContainer.add('text', this.state.variantIndex)
-            }}
-          >
-            <svg width={16} height={16} viewBox="0 0 24 24" fill="#fff">
-              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-            </svg>
-          </button>
-        )}
+        {typeof this.state.variantIndex !== 'undefined' &&
+          (this.state.showVariantList ? (
+            <ul
+              style={{
+                listStyle: 'none',
+                position: 'absolute',
+                top: '100%',
+                marginTop: -16,
+                left: '100%',
+                marginLeft: -16,
+                padding: 0,
+                pointerEvents: 'auto',
+                width: 180,
+                background: 'white',
+                boxShadow: '0 8px 20px 0 rgba(0, 0, 0, 0.24)'
+              }}
+            >
+              {this.state.variants.map(variant => (
+                <li key={variant}>
+                  <button
+                    type="button"
+                    style={{
+                      appearance: 'none',
+                      display: 'block',
+                      width: '100%',
+                      padding: '0 18px',
+                      borderRadius: 0,
+                      border: 0,
+                      background: 'none',
+                      cursor: 'pointer',
+                      fontSize: 14,
+                      color: '#453f56',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      height: 42
+                    }}
+                    onClick={() => {
+                      this.state.stateContainer.add(
+                        variant,
+                        this.state.variantIndex
+                      )
+                      this.setState({ showVariantList: false })
+                    }}
+                  >
+                    {kebabToSentence(variant)}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <button
+              type="button"
+              style={{
+                appearance: 'none',
+                position: 'absolute',
+                bottom: -16,
+                right: -16,
+                width: 32,
+                height: 32,
+                border: 0,
+                borderRadius: 0,
+                padding: 0,
+                background: '#453f56',
+                pointerEvents: 'auto',
+                boxShadow: '0px 4px 9px 0px rgba(0,0,0,0.39)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
+              }}
+              onClick={() => {
+                if (this.state.variants.length === 1) {
+                  this.state.stateContainer.add(
+                    this.state.variants[0],
+                    this.state.variantIndex
+                  )
+                } else {
+                  this.setState({ showVariantList: true })
+                }
+              }}
+            >
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="#fff">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+              </svg>
+            </button>
+          ))}
         {this.state.editableProps && (
           <div
             style={{
@@ -202,4 +262,10 @@ function isDescendant(parent, child) {
     node = node.parentNode
   }
   return false
+}
+
+function kebabToSentence(string) {
+  return string
+    .replace(/^[a-z]/, m => m.toUpperCase())
+    .replace(/-([a-z])/i, (m, p1) => ' ' + p1.toLowerCase())
 }
