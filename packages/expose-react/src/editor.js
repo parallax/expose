@@ -206,6 +206,7 @@ export default function editor(whitelist = [], location) {
               //       active: item.active(editorView.state)
               //     }))
               //   })
+              if (whitelist.length === 0) return
               window.parent &&
                 window.parent.Expose &&
                 window.parent.Expose.updateTextEditable({
@@ -228,6 +229,7 @@ export default function editor(whitelist = [], location) {
         props: {
           handleDOMEvents: {
             focus: function() {
+              if (whitelist.length === 0) return
               window.parent &&
                 window.parent.Expose &&
                 window.parent.Expose.showTextEditable({
