@@ -74,16 +74,24 @@ class EditableProp extends React.Component {
           >
             {this.props.options.map((option, i) => (
               <li style={{ margin: '10px 5px 0' }} key={i}>
-                <button
-                  type="button"
-                  className="appearance-none block w-6 h-6 border-0 rounded relative"
+                <input
+                  type="radio"
+                  id={this.props.id + i}
+                  name={this.props.id}
+                  value={option}
+                  onChange={e => {
+                    set(e.target.value)
+                  }}
+                  className="sr-only"
+                />
+                <label
+                  htmlFor={this.props.id + i}
+                  className="block w-6 h-6 border-0 rounded relative cursor-pointer"
                   style={{
                     background: option
                   }}
-                  onClick={() => {
-                    set(option)
-                  }}
                 >
+                  <span className="sr-only">{option}</span>
                   {this.props.value === option ? (
                     <div
                       className="absolute rounded-full bg-purple-dark border border-white"
@@ -95,7 +103,7 @@ class EditableProp extends React.Component {
                       }}
                     />
                   ) : null}
-                </button>
+                </label>
               </li>
             ))}
           </ul>
