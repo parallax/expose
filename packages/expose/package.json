@@ -22,7 +22,7 @@
     "postcss-loader": "^3.0.0",
     "react": "^16.5.0",
     "react-dom": "^16.5.0",
-    "react-pose": "^3.3.0",
+    "react-transition-group": "^2.4.0",
     "style-loader": "^0.23.0",
     "tailwindcss": "^0.6.5",
     "tailwindcss-alpha": "^0.1.2",

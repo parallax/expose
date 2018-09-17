@@ -2,6 +2,7 @@ import React from 'react'
 // import Slider from './slider.js';
 import { Subscribe } from 'unstated'
 import BackLink from './BackLink.js'
+import Page from './Page.js'
 
 class EditableProp extends React.Component {
   render() {
@@ -109,7 +110,7 @@ export default class EditableOptions extends React.Component {
     return (
       <Subscribe to={[createContainer(props.stateContainer)]}>
         {s => (
-          <div className="expose-editable-props p-8">
+          <Page padding="lg">
             <BackLink to="/" />
             {Object.keys(props.options).map((prop, i) => {
               let p = props.options[prop]
@@ -132,7 +133,7 @@ export default class EditableOptions extends React.Component {
                 </div>
               )
             })}
-          </div>
+          </Page>
         )}
       </Subscribe>
     )

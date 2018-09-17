@@ -6,29 +6,16 @@ import {
   createMemorySource,
   createHistory
 } from '@reach/router'
-import posed, { PoseGroup } from 'react-pose'
+import { TransitionGroup, CSSTransition } from 'react-transition-group'
 
 let source = createMemorySource('/')
 let history = createHistory(source)
 let navigate
 
-let transition = {
-  type: 'spring',
-  stiffness: 200,
-  damping: 20
-}
-
-let RouteContainer = posed.div({
-  enter: { x: '0%', transition },
-  preEnter: { x: '100%', transition },
-  exit: { x: '-100%', transition }
-})
-
 export default class Router extends React.Component {
   state = {
     primary: true,
-    preEnterPose: 'preEnter',
-    exitPose: 'exit'
+    back: false
   }
   // static getDerivedStateFromProps({ dir }) {
   //   if (dir === 'back') {
@@ -43,18 +30,14 @@ export default class Router extends React.Component {
     let a = e.target.closest('a')
     if (!a) return
     if (a.getAttribute('data-back')) {
-      this.setState({ preEnterPose: 'exit', exitPose: 'preEnter' })
+      this.setState({ back: true })
     } else {
-      this.setState({ preEnterPose: 'preEnter', exitPose: 'exit' })
+      this.setState({ back: false })
     }
   }
   componentDidMount() {
     navigate = (to, back = false) => {
-      let state = back
-        ? { preEnterPose: 'exit', exitPose: 'preEnter' }
-        : { preEnterPose: 'preEnter', exitPose: 'exit' }
-
-      this.setState({ primary: true, ...state }, () => {
+      this.setState({ primary: true, back }, () => {
         history.navigate(to)
       })
     }
@@ -105,25 +88,26 @@ export default class Router extends React.Component {
           </div>
         </div>
         <div
-          className="overflow-auto overflow-x-hidden"
-          style={{ paddingTop: 160 }}
+          className="overflow-auto overflow-x-hidden flex-auto relative"
+          style={{ marginTop: 160 }}
         >
           <LocationProvider history={history}>
             <Location>
               {({ location }) => (
-                <PoseGroup
-                  preEnterPose={this.state.preEnterPose}
-                  exitPose={this.state.exitPose}
-                >
-                  <RouteContainer key={location.pathname}>
+                <TransitionGroup>
+                  <CSSTransition
+                    key={location.pathname}
+                    classNames={`slide-${this.state.back ? 'back' : 'forward'}`}
+                    timeout={500}
+                  >
                     <ReachRouter
                       location={location}
                       primary={this.state.primary}
                     >
                       {children}
                     </ReachRouter>
-                  </RouteContainer>
-                </PoseGroup>
+                  </CSSTransition>
+                </TransitionGroup>
               )}
             </Location>
           </LocationProvider>
