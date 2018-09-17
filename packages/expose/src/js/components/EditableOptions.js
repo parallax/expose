@@ -72,8 +72,8 @@ class EditableProp extends React.Component {
               margin: '-10px -5px 0'
             }}
           >
-            {this.props.options.map(option => (
-              <li style={{ margin: '10px 5px 0' }}>
+            {this.props.options.map((option, i) => (
+              <li style={{ margin: '10px 5px 0' }} key={i}>
                 <button
                   type="button"
                   className="appearance-none block w-6 h-6 border-0 rounded relative"

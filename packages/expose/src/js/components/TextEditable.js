@@ -1,5 +1,7 @@
 import React from 'react'
 import Page from './Page.js'
+import BackLink from './BackLink.js'
+import icons from '../icons.js'
 
 export default class TextEditable extends React.Component {
   render() {
@@ -18,6 +20,7 @@ export default class TextEditable extends React.Component {
               let Icon = icons[command.name]
               return (
                 <button
+                  key={command.name}
                   className={
                     'appearance-none relative w-1/6 flex items-center justify-center border-0 rounded-none p-0 bg-transparent' +
                     (command.active ? ' is-active' : '')

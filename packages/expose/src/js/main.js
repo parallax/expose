@@ -6,7 +6,6 @@ import EditableOptions from './components/EditableOptions.js'
 import { Provider } from 'unstated'
 import BackLink from './components/BackLink.js'
 import '../css/main.css'
-import icons from './icons.js'
 import Page from './components/Page.js'
 import TextEditable from './components/TextEditable.js'
 
@@ -43,37 +42,6 @@ let Home = () => (
       </svg>
       Blog Posts
     </MenuLink>
-    <div className="btn-group flex border border-purple-dark rounded">
-      <div
-        className="-ml-px flex"
-        style={{ height: 35, width: 'calc(100% + 2px)' }}
-      >
-        <button
-          type="button"
-          className="appearance-none relative w-1/6 border-0 rounded-none p-0 bg-transparent"
-        />
-        <button
-          type="button"
-          className="appearance-none relative w-1/6 border-0 rounded-none p-0 bg-transparent"
-        />
-        <button
-          type="button"
-          className="appearance-none relative w-1/6 border-0 rounded-none p-0 bg-transparent"
-        />
-        <button
-          type="button"
-          className="appearance-none relative w-1/6 border-0 rounded-none p-0 bg-transparent"
-        />
-        <button
-          type="button"
-          className="appearance-none relative w-1/6 border-0 rounded-none p-0 bg-transparent"
-        />
-        <button
-          type="button"
-          className="appearance-none relative w-1/6 border-0 rounded-none p-0 bg-transparent"
-        />
-      </div>
-    </div>
   </Page>
 )
 
