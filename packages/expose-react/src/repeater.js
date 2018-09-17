@@ -1,4 +1,4 @@
-import { h, Component } from 'preact'
+import { h, Component, cloneElement } from 'preact'
 import { Subscribe, Container } from './unstated.js'
 import Sortable from './sortable.js'
 import Location from './location.js'
@@ -64,76 +64,90 @@ class RepeaterInner extends Component {
   render() {
     return (
       <Subscribe to={[this.state.container]}>
-        {c => (
-          <Sortable
-            {...this.props}
-            data-expose-repeater={this.props.location}
-            onStart={() => {
-              this.dragging = true
-            }}
-            onEnd={() => {
-              this.dragging = false
-            }}
-            onChange={(order, sortable, e) => {
-              c.move(
-                e.oldIndex,
-                e.newIndex,
-                appendLocation(this.props.location, this.props.name)
-              )
-            }}
-            onMouseOver={e => {
-              if (this.dragging) return
-              let v = e.target.closest(
-                `[data-expose-repeater="${this.props.location}"] > *`
-              )
-              if (!v) return
+        {c => {
+          let variantCount = {}
 
-              e.stopPropagation()
+          return (
+            <Sortable
+              {...this.props}
+              data-expose-repeater={this.props.location}
+              onStart={() => {
+                this.dragging = true
+              }}
+              onEnd={() => {
+                this.dragging = false
+              }}
+              onChange={(order, sortable, e) => {
+                c.move(
+                  e.oldIndex,
+                  e.newIndex,
+                  appendLocation(this.props.location, this.props.name)
+                )
+              }}
+              onMouseOver={e => {
+                if (this.dragging) return
+                let v = e.target.closest(
+                  `[data-expose-repeater="${this.props.location}"] > *`
+                )
+                if (!v) return
 
-              window.setHighlightedElement(v, {
-                variantIndex: getElementIndex(v),
-                variants: this.props.children.map(n => n.attributes.name),
-                stateContainer: c,
-                editableProps: null
-              })
-              // let rect = v.getBoundingClientRect()
-              // window.setHighlightState({
-              //   variantIndex: getElementIndex(v),
-              //   variants: this.props.children.map(n => n.attributes.name),
-              //   stateContainer: c,
-              //   styles: {
-              //     top: `${rect.top - 10 + window.pageYOffset}px`,
-              //     left: `${rect.left - 10}px`,
-              //     width: `${rect.width + 20}px`,
-              //     height: `${rect.height + 20}px`
-              //   }
-              // })
-            }}
-          >
-            {c.state.value.length === 0 ? (
-              <button
-                onClick={() => {
-                  c.add('text')
-                }}
-              >
-                add
-              </button>
-            ) : (
-              c.state.value.map((v, i) => (
-                <Location.Provider
-                  value={appendLocation(
-                    this.props.location,
-                    `${this.props.name}.${i}.$children`
-                  )}
+                e.stopPropagation()
+
+                window.setHighlightedElement(v, {
+                  variantIndex: getElementIndex(v),
+                  variants: this.props.children.map(n => n.attributes.name),
+                  stateContainer: c,
+                  editableProps: null
+                })
+                // let rect = v.getBoundingClientRect()
+                // window.setHighlightState({
+                //   variantIndex: getElementIndex(v),
+                //   variants: this.props.children.map(n => n.attributes.name),
+                //   stateContainer: c,
+                //   styles: {
+                //     top: `${rect.top - 10 + window.pageYOffset}px`,
+                //     left: `${rect.left - 10}px`,
+                //     width: `${rect.width + 20}px`,
+                //     height: `${rect.height + 20}px`
+                //   }
+                // })
+              }}
+            >
+              {c.state.value.length === 0 ? (
+                <button
+                  onClick={() => {
+                    c.add('text')
+                  }}
                 >
-                  {this.props.children
-                    .filter(child => child.attributes.name === v.name)[0]
-                    .attributes.render()}
-                </Location.Provider>
-              ))
-            )}
-          </Sortable>
-        )}
+                  add
+                </button>
+              ) : (
+                c.state.value.map((v, i) => {
+                  variantCount[v.name] =
+                    typeof variantCount[v.name] === 'undefined'
+                      ? 1
+                      : variantCount[v.name] + 1
+
+                  return (
+                    <Location.Provider
+                      value={appendLocation(
+                        this.props.location,
+                        `${this.props.name}.${i}.$children`
+                      )}
+                    >
+                      {cloneElement(
+                        this.props.children.filter(
+                          child => child.attributes.name === v.name
+                        )[0],
+                        { index: i, variantIndex: variantCount[v.name] - 1 }
+                      )}
+                    </Location.Provider>
+                  )
+                })
+              )}
+            </Sortable>
+          )
+        }}
       </Subscribe>
     )
   }

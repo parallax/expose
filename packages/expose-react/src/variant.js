@@ -1,7 +1,11 @@
-import { Component } from 'preact'
+import { h, Component } from 'preact'
 
 export default class Variant extends Component {
   render() {
-    return null
+    let { name, render, component: Component, ...props } = this.props
+    if (Component) {
+      return <Component {...props} />
+    }
+    return render(props)
   }
 }
