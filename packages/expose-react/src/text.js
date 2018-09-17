@@ -33,6 +33,7 @@ class TextContainer extends Container {
 }
 
 class Foo extends Component {
+  editing = false
   constructor(props) {
     super(props)
     let container
@@ -103,6 +104,22 @@ class Foo extends Component {
       'Lorem ipsum'
     )
   }
+  shouldComponentUpdate() {
+    let val = this.getValue()
+    let dom = document.createElement('div')
+    dom.innerHTML = val
+
+    this.editor.updateState(
+      EditorState.create({
+        plugins: this.editor.state.config.plugins,
+        doc: DOMParser.fromSchema(this.schema).parse(dom, {
+          preserveWhitespace: true
+        })
+      })
+    )
+
+    return false
+  }
   render() {
     let Tag = this.props.as || 'div'
 
@@ -117,11 +134,13 @@ class Foo extends Component {
               fontVariantLigatures: 'none'
             }}
             onBlur={() => {
+              this.editing = false
               c.set(this.editor.dom.innerHTML)
             }}
             onMouseEnter={() => {
               window.setHighlightedElement(this.root)
             }}
+            onFocus={() => (this.editing = true)}
             dangerouslySetInnerHTML={{ __html: c.state.value }}
             ref={ref =>
               (this.root = ref)
