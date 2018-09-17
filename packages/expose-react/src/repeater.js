@@ -66,6 +66,7 @@ class RepeaterInner extends Component {
       <Subscribe to={[this.state.container]}>
         {c => (
           <Sortable
+            {...this.props}
             data-expose-repeater={this.props.location}
             onStart={() => {
               this.dragging = true
