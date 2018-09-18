@@ -57,7 +57,7 @@ export default class Router extends React.Component {
         }}
         onClickCapture={this.handleClick}
       >
-        <div className="logo-container mt-9 absolute z-10 pin-t pin-l w-full pointer-events-none">
+        <div className="logo-container mt-9 absolute z-50 pin-t pin-l w-full pointer-events-none">
           <div className="mx-auto mb-9" style={{ width: 110 }}>
             <div className="relative aspect-ratio-logo">
               <svg
@@ -88,13 +88,13 @@ export default class Router extends React.Component {
           </div>
         </div>
         <div
-          className="overflow-auto overflow-x-hidden flex-auto relative"
-          style={{ marginTop: 160 }}
+          className="overflow-auto overflow-x-hidden flex flex-col flex-auto relative"
+          style={{ paddingTop: 160 }}
         >
           <LocationProvider history={history}>
             <Location>
               {({ location }) => (
-                <TransitionGroup>
+                <TransitionGroup className="relative flex-auto">
                   <CSSTransition
                     key={location.pathname}
                     classNames={`slide-${this.state.back ? 'back' : 'forward'}`}
