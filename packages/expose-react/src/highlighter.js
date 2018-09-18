@@ -13,6 +13,19 @@ export default class Highlighter extends Component {
   componentDidMount() {
     window.setHighlightState = this.setState.bind(this)
     window.setHighlightedElement = this.setHighlightedElement
+    window.updateHighlight = this.updateHighlight
+  }
+  updateHighlight = () => {
+    let rect = this.state.el.getBoundingClientRect()
+    this.setState({
+      styles: {
+        top: `${rect.top - 10 + window.pageYOffset}px`,
+        left: `${rect.left - 10}px`,
+        width: `${rect.width + 20}px`,
+        height: `${rect.height + 20}px`,
+        transition: 'none'
+      }
+    })
   }
   setHighlightedElement = (el, state = {}) => {
     if (this.state.active) return
@@ -26,7 +39,8 @@ export default class Highlighter extends Component {
         top: `${rect.top - 10 + window.pageYOffset}px`,
         left: `${rect.left - 10}px`,
         width: `${rect.width + 20}px`,
-        height: `${rect.height + 20}px`
+        height: `${rect.height + 20}px`,
+        transition: '250ms'
       }
     }
 
@@ -57,7 +71,6 @@ export default class Highlighter extends Component {
           position: 'absolute',
           border: '1px dashed #8360d6',
           pointerEvents: 'none',
-          transition: '250ms',
           ...this.state.styles
         }}
       >

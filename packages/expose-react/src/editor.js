@@ -206,6 +206,7 @@ export default function editor(whitelist = [], location) {
               //       active: item.active(editorView.state)
               //     }))
               //   })
+              window.updateHighlight()
               if (whitelist.length === 0) return
               window.parent &&
                 window.parent.Expose &&
