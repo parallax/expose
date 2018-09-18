@@ -2,6 +2,11 @@ import { Schema } from 'prosemirror-model'
 import { baseKeymap, toggleMark, setBlockType } from 'prosemirror-commands'
 import { keymap } from 'prosemirror-keymap'
 import { Plugin } from 'prosemirror-state'
+import {
+  addListNodes,
+  wrapInList,
+  splitListItem
+} from 'prosemirror-schema-list'
 
 export default function editor(whitelist = [], location) {
   let schema = {
@@ -114,12 +119,14 @@ export default function editor(whitelist = [], location) {
   let pmSchema = new Schema(schema)
 
   // lists
-  /*let nodes = addListNodes(pmSchema.spec.nodes, 'inline*', 'block')
+  let nodes = addListNodes(pmSchema.spec.nodes, 'block*', 'block')
   nodes = nodes.update('doc', { content: 'block*' })
   console.log(nodes)
   // console.dir(nodes)
   pmSchema = new Schema({ nodes, marks: schema.marks })
+  kmap['Enter'] = splitListItem(pmSchema.nodes.list_item)
   items.push({
+    name: 'ul',
     command: wrapInList(pmSchema.nodes.bullet_list),
     active: state => {
       let { $from, to, node } = state.selection
@@ -127,9 +134,8 @@ export default function editor(whitelist = [], location) {
       return (
         to <= $from.end() && $from.parent.hasMarkup(pmSchema.nodes.list_item)
       )
-    },
-    dom: icon('ul')
-  })*/
+    }
+  })
 
   if (includes(whitelist, 'b') || includes(whitelist, 'strong')) {
     kmap['Mod-b'] = toggleMark(pmSchema.marks.strong)
@@ -185,8 +191,8 @@ export default function editor(whitelist = [], location) {
   return {
     schema: pmSchema,
     plugins: [
-      keymap(baseKeymap),
       keymap(kmap),
+      keymap(baseKeymap),
       new Plugin({
         view(editorView) {
           this.editorView = editorView
