@@ -56,11 +56,28 @@ class Foo extends Component {
     }
   }
   componentDidMount() {
-    console.log(this.base)
-    this.base.addEventListener('mouseenter', this.foo)
+    if (this.props.isPage) {
+      window.parent &&
+        window.parent.Expose &&
+        window.parent.Expose.setPage(
+          `${this.props.location}.${this.props.name}`
+        )
+
+      window.parent &&
+        window.parent.Expose &&
+        window.parent.Expose.setEditableOptions({
+          location: `${this.props.location}.${this.props.name}`,
+          options: this.props.props,
+          stateContainer: this.state.container
+        })
+    } else {
+      this.base.addEventListener('mouseenter', this.foo)
+    }
   }
   componentWillUnmount() {
-    this.base.removeEventListener('mouseenter', this.foo)
+    if (!this.props.isPage) {
+      this.base.removeEventListener('mouseenter', this.foo)
+    }
   }
   getValue() {
     return filter(
@@ -74,7 +91,11 @@ class Foo extends Component {
   render() {
     return (
       <Subscribe to={[this.state.container]}>
-        {c => this.props.children[0](c.state.value)}
+        {c =>
+          typeof this.props.children[0] === 'function'
+            ? this.props.children[0](c.state.value)
+            : this.props.children[0]
+        }
       </Subscribe>
     )
   }
