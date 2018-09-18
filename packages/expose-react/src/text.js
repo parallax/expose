@@ -50,7 +50,8 @@ class Foo extends Component {
   componentDidMount() {
     let { schema, plugins } = editor(
       this.props.allow || [],
-      `${this.props.location}.${this.props.name}`
+      `${this.props.location}.${this.props.name}`,
+      this.props.macros || []
     )
     this.schema = schema
     this.plugins = plugins

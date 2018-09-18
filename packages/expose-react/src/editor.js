@@ -3,7 +3,7 @@ import { baseKeymap, toggleMark, setBlockType } from 'prosemirror-commands'
 import { keymap } from 'prosemirror-keymap'
 import { Plugin } from 'prosemirror-state'
 
-export default function editor(whitelist = [], location) {
+export default function editor(whitelist = [], location, macros = []) {
   let schema = {
     nodes: {
       text: {
@@ -135,6 +135,7 @@ export default function editor(whitelist = [], location) {
     kmap['Mod-b'] = toggleMark(pmSchema.marks.strong)
     items.push({
       name: 'b',
+      group: 'format',
       command: kmap['Mod-b'],
       active: state => markActive(state, pmSchema.marks.strong)
     })
@@ -144,6 +145,7 @@ export default function editor(whitelist = [], location) {
     kmap['Mod-i'] = toggleMark(pmSchema.marks.em)
     items.push({
       name: 'i',
+      group: 'format',
       command: kmap['Mod-i'],
       active: state => markActive(state, pmSchema.marks.em)
     })
@@ -154,6 +156,7 @@ export default function editor(whitelist = [], location) {
     let pCommand = setBlockType(pmSchema.nodes.paragraph)
     items.push({
       name: 'p',
+      group: 'format',
       command: pCommand,
       active: state => {
         let { $from, to, node } = state.selection
@@ -170,6 +173,7 @@ export default function editor(whitelist = [], location) {
     let command = setBlockType(pmSchema.nodes.heading, { level: h })
     items.push({
       name: `h${h}`,
+      group: 'format',
       command: command,
       active: state => {
         let { $from, to, node } = state.selection
@@ -179,6 +183,17 @@ export default function editor(whitelist = [], location) {
           $from.parent.hasMarkup(pmSchema.nodes.heading, { level: h })
         )
       }
+    })
+  })
+
+  macros.forEach(char => {
+    items.push({
+      name: char,
+      group: 'macros',
+      command: (state, dispatch) => {
+        dispatch(state.tr.insertText(char))
+      },
+      active: () => false
     })
   })
 
