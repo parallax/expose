@@ -121,7 +121,7 @@ class App extends React.Component {
     )
   }
   setPage = page => {
-    this.setState({ page })
+    this.setState({ page }, () => navigate('/', true))
   }
   componentDidMount() {
     window.Expose.setEditableOptions = this.setEditableOptions
