@@ -4,6 +4,7 @@ import { Subscribe } from 'unstated'
 import BackLink from './BackLink.js'
 import Page from './Page.js'
 import DatePicker from './DatePicker.js'
+import Textarea from 'react-textarea-autosize'
 
 class EditableProp extends React.Component {
   render() {
@@ -16,8 +17,20 @@ class EditableProp extends React.Component {
             type="text"
             defaultValue={this.props.value || ''}
             onInput={e => set(e.target.value)}
-            className="appearance-none block w-full bg-transparent focus:bg-white border border-purple-dark rounded h-7 focus:outline-none"
-            style={{ padding: '0 12px' }}
+            className="appearance-none block w-full bg-transparent focus:bg-white border border-purple-dark rounded h-7 text-inherit focus:outline-none"
+            style={{ padding: '0 10px' }}
+          />
+        )
+        break
+      case 'textarea':
+        return (
+          <Textarea
+            id={this.props.id}
+            defaultValue={this.props.value || ''}
+            onInput={e => set(e.target.value)}
+            className="appearance-none block w-full bg-transparent focus:bg-white border border-purple-dark rounded h-7 text-inherit focus:outline-none"
+            style={{ padding: '7.5px 10px' }}
+            minRows={2}
           />
         )
         break

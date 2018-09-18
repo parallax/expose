@@ -24,6 +24,7 @@
     "react": "^16.5.0",
     "react-datepicker": "^1.6.0",
     "react-dom": "^16.5.0",
+    "react-textarea-autosize": "^7.0.4",
     "react-transition-group": "^2.4.0",
     "style-loader": "^0.23.0",
     "tailwindcss": "^0.6.5",
