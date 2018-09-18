@@ -89,7 +89,7 @@ export default class Router extends React.Component {
         </div>
         <div
           className="overflow-auto overflow-x-hidden flex flex-col flex-auto relative"
-          style={{ paddingTop: 160 }}
+          style={{ paddingTop: 130 }}
         >
           <LocationProvider history={history}>
             <Location>
@@ -112,6 +112,20 @@ export default class Router extends React.Component {
             </Location>
           </LocationProvider>
         </div>
+        <a
+          href="#"
+          className="block flex-none mt-auto bg-grey-light no-underline text-inherit h-10 px-6 flex items-center"
+        >
+          <svg
+            width={18}
+            height={18}
+            viewBox="0 0 24 24"
+            className="fill-current mr-4"
+          >
+            <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
+          </svg>
+          Log out
+        </a>
       </div>
     )
   }

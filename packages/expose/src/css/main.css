@@ -222,25 +222,25 @@ table tbody tr:hover td:not(:first-child) {
   opacity: 1;
 }
 
-.slide-forward-enter.slide-forward-enter-active,
-.slide-back-enter.slide-back-enter-active,
-.slide-forward-exit.slide-forward-exit-active,
-.slide-back-exit.slide-back-exit-active {
+.slide-forward-enter.slide-forward-enter-active > *,
+.slide-back-enter.slide-back-enter-active > *,
+.slide-forward-exit.slide-forward-exit-active > *,
+.slide-back-exit.slide-back-exit-active > * {
   transition: transform 450ms cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.slide-forward-enter,
-.slide-back-exit.slide-back-exit-active {
+.slide-forward-enter > *,
+.slide-back-exit.slide-back-exit-active > * {
   transform: translateX(100%);
 }
 
-.slide-forward-enter.slide-forward-enter-active,
-.slide-back-enter.slide-back-enter-active {
+.slide-forward-enter.slide-forward-enter-active > *,
+.slide-back-enter.slide-back-enter-active > * {
   transform: none;
 }
 
-.slide-forward-exit.slide-forward-exit-active,
-.slide-back-enter {
+.slide-forward-exit.slide-forward-exit-active > *,
+.slide-back-enter > * {
   transform: translateX(-100%);
 }
 

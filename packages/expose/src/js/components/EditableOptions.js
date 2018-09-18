@@ -142,28 +142,30 @@ export default class EditableOptions extends React.Component {
       <Subscribe to={[createContainer(props.stateContainer)]}>
         {s => (
           <Page padding="lg">
-            <BackLink to="/" />
-            {Object.keys(props.options).map((prop, i) => {
-              let p = props.options[prop]
-              return (
-                <div key={`${s.location}.${prop}`} className="relative mt-5">
-                  <label
-                    htmlFor={`${s.location}.${prop}`}
-                    className="relative block mb-3 z-10"
-                  >
-                    {p.displayName || camelToSentence(prop)}
-                  </label>
-                  <EditableProp
-                    id={`${s.location}.${prop}`}
-                    type={p.type}
-                    value={s.state.value[prop]}
-                    default={p.default}
-                    set={x => s.set(prop, x)}
-                    options={p.options}
-                  />
-                </div>
-              )
-            })}
+            <div className="mb-6">
+              <BackLink to="/" />
+              {Object.keys(props.options).map((prop, i) => {
+                let p = props.options[prop]
+                return (
+                  <div key={`${s.location}.${prop}`} className="relative mt-5">
+                    <label
+                      htmlFor={`${s.location}.${prop}`}
+                      className="relative block mb-3 z-10"
+                    >
+                      {p.displayName || camelToSentence(prop)}
+                    </label>
+                    <EditableProp
+                      id={`${s.location}.${prop}`}
+                      type={p.type}
+                      value={s.state.value[prop]}
+                      default={p.default}
+                      set={x => s.set(prop, x)}
+                      options={p.options}
+                    />
+                  </div>
+                )
+              })}
+            </div>
           </Page>
         )}
       </Subscribe>
