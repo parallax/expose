@@ -24,6 +24,8 @@
         background: #e1e1ee;
     }
     </style>
+    <script src="https://pqina.nl/slim/static/js/require.js"></script>
+    <script src="https://pqina.nl/slim/static/js/main.min.js?v=4.18.0"></script>
 </head>
 <body>
     <div id="app"></div>

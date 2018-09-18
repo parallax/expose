@@ -5,12 +5,42 @@ import BackLink from './BackLink.js'
 import Page from './Page.js'
 import DatePicker from './DatePicker.js'
 import Textarea from 'react-textarea-autosize'
+import '../../css/slim.css'
+
+let injected = false
 
 class EditableProp extends React.Component {
   render() {
     let set = this.props.set
 
     switch (this.props.type) {
+      case 'image':
+        if (!injected) {
+          injected = true
+          setTimeout(() => {
+            window.requirejs(['slim'], slim => {
+              window.slimDidRemove = () => {
+                set('')
+              }
+              window.slimDidTransform = ({ output: { image } }) => {
+                set(image.toDataURL())
+              }
+              slim.parse(document.body)
+            })
+          }, 1000)
+        }
+        return (
+          <div
+            className="slim"
+            data-ratio="16:9"
+            data-size="640,640"
+            data-did-remove="slimDidRemove"
+            data-did-transform="slimDidTransform"
+          >
+            <input type="file" name="slim[]" />
+          </div>
+        )
+        break
       case 'text':
         return (
           <input
