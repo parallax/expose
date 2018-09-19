@@ -144,6 +144,8 @@ class EditableProp extends React.Component {
           />
         )
         break
+      default:
+        return null
     }
   }
 }
