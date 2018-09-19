@@ -3,9 +3,6 @@ import { Subscribe, Container } from './unstated.js'
 import Location from './location.js'
 import dlv from 'dlv'
 import dset from 'dset'
-import { EditorState } from 'prosemirror-state'
-import { EditorView } from 'prosemirror-view'
-import { Schema, DOMParser } from 'prosemirror-model'
 import editor from './editor.js'
 
 // let schema = new Schema({
@@ -48,24 +45,32 @@ class Foo extends Component {
     this.state = { container }
   }
   componentDidMount() {
-    let { schema, plugins } = editor(
-      this.props.allow || [],
-      `${this.props.location}.${this.props.name}`
-    )
-    this.schema = schema
-    this.plugins = plugins
+    window.parent.Expose.loadProseMirror().then(prosemirror => {
+      this.prosemirror = prosemirror
 
-    this.editor = new EditorView(
-      { mount: this.root },
-      {
-        state: EditorState.create({
-          doc: DOMParser.fromSchema(schema).parse(this.root, {
-            preserveWhitespace: true
-          }),
-          plugins
-        })
-      }
-    )
+      let { schema, plugins } = editor(
+        prosemirror,
+        this.props.allow || [],
+        `${this.props.location}.${this.props.name}`
+      )
+      this.schema = schema
+      this.plugins = plugins
+
+      this.editor = new prosemirror.view.EditorView(
+        { mount: this.root },
+        {
+          state: prosemirror.state.EditorState.create({
+            doc: prosemirror.model.DOMParser.fromSchema(schema).parse(
+              this.root,
+              {
+                preserveWhitespace: true
+              }
+            ),
+            plugins
+          })
+        }
+      )
+    })
   }
   componentDidUpdate() {
     let val = this.getValue()
@@ -105,16 +110,21 @@ class Foo extends Component {
     )
   }
   shouldComponentUpdate() {
+    if (!this.prosemirror) return false
+
     let val = this.getValue()
     let dom = document.createElement('div')
     dom.innerHTML = val
 
     this.editor.updateState(
-      EditorState.create({
+      this.prosemirror.state.EditorState.create({
         plugins: this.editor.state.config.plugins,
-        doc: DOMParser.fromSchema(this.schema).parse(dom, {
-          preserveWhitespace: true
-        })
+        doc: this.prosemirror.model.DOMParser.fromSchema(this.schema).parse(
+          dom,
+          {
+            preserveWhitespace: true
+          }
+        )
       })
     )
 

@@ -4,7 +4,8 @@ module.exports = {
   entry: './src/js/main.js',
   output: {
     filename: 'expose.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/vendor/expose/'
   },
   module: {
     rules: [

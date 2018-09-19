@@ -1,9 +1,4 @@
-import { Schema } from 'prosemirror-model'
-import { baseKeymap, toggleMark, setBlockType } from 'prosemirror-commands'
-import { keymap } from 'prosemirror-keymap'
-import { Plugin } from 'prosemirror-state'
-
-export default function editor(whitelist = [], location) {
+export default function editor(prosemirror, whitelist = [], location) {
   let schema = {
     nodes: {
       text: {
@@ -111,7 +106,7 @@ export default function editor(whitelist = [], location) {
     }
   }
 
-  let pmSchema = new Schema(schema)
+  let pmSchema = new prosemirror.model.Schema(schema)
 
   // lists
   /*let nodes = addListNodes(pmSchema.spec.nodes, 'inline*', 'block')
@@ -132,7 +127,7 @@ export default function editor(whitelist = [], location) {
   })*/
 
   if (includes(whitelist, 'b') || includes(whitelist, 'strong')) {
-    kmap['Mod-b'] = toggleMark(pmSchema.marks.strong)
+    kmap['Mod-b'] = prosemirror.commands.toggleMark(pmSchema.marks.strong)
     items.push({
       name: 'b',
       command: kmap['Mod-b'],
@@ -141,7 +136,7 @@ export default function editor(whitelist = [], location) {
   }
 
   if (includes(whitelist, 'i') || includes(whitelist, 'em')) {
-    kmap['Mod-i'] = toggleMark(pmSchema.marks.em)
+    kmap['Mod-i'] = prosemirror.commands.toggleMark(pmSchema.marks.em)
     items.push({
       name: 'i',
       command: kmap['Mod-i'],
@@ -151,7 +146,7 @@ export default function editor(whitelist = [], location) {
 
   // paragraph
   if (includes(whitelist, 'p')) {
-    let pCommand = setBlockType(pmSchema.nodes.paragraph)
+    let pCommand = prosemirror.commands.setBlockType(pmSchema.nodes.paragraph)
     items.push({
       name: 'p',
       command: pCommand,
@@ -167,7 +162,9 @@ export default function editor(whitelist = [], location) {
 
   // headings
   headings.forEach(h => {
-    let command = setBlockType(pmSchema.nodes.heading, { level: h })
+    let command = prosemirror.commands.setBlockType(pmSchema.nodes.heading, {
+      level: h
+    })
     items.push({
       name: `h${h}`,
       command: command,
@@ -185,9 +182,9 @@ export default function editor(whitelist = [], location) {
   return {
     schema: pmSchema,
     plugins: [
-      keymap(baseKeymap),
-      keymap(kmap),
-      new Plugin({
+      prosemirror.keymap.keymap(prosemirror.commands.baseKeymap),
+      prosemirror.keymap.keymap(kmap),
+      new prosemirror.state.Plugin({
         view(editorView) {
           this.editorView = editorView
           return {
@@ -228,20 +225,20 @@ export default function editor(whitelist = [], location) {
         },
         props: {
           handleDOMEvents: {
-            focus: function() {
+            focus(editorView) {
               if (whitelist.length === 0) return
               window.parent &&
                 window.parent.Expose &&
                 window.parent.Expose.showTextEditable({
                   location,
-                  editor: this.spec.editorView,
+                  editor: editorView,
                   commands: items.map(item => ({
                     ...item,
                     command: (...args) => {
-                      this.spec.editorView.focus()
+                      editorView.focus()
                       item.command(...args)
                     },
-                    active: item.active(this.spec.editorView.state)
+                    active: item.active(editorView.state)
                   }))
                 })
             }

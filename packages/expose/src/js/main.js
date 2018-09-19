@@ -11,6 +11,8 @@ import TextEditable from './components/TextEditable.js'
 
 window.Expose = {}
 
+window.Expose.loadProseMirror = () => import('./prosemirror.js')
+
 let MenuLink = ({ to, children, className = '' }) => (
   <Link
     to={to}
