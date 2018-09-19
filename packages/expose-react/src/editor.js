@@ -1,5 +1,10 @@
 import { Schema } from 'prosemirror-model'
-import { baseKeymap, toggleMark, setBlockType } from 'prosemirror-commands'
+import {
+  baseKeymap,
+  toggleMark,
+  setBlockType,
+  lift
+} from 'prosemirror-commands'
 import { keymap } from 'prosemirror-keymap'
 import { Plugin } from 'prosemirror-state'
 import {
@@ -8,18 +13,35 @@ import {
   splitListItem
 } from 'prosemirror-schema-list'
 
+let m = {
+  p: 'paragraph',
+  h1: 'heading',
+  h2: 'heading',
+  h3: 'heading',
+  h4: 'heading',
+  h5: 'heading',
+  h6: 'heading',
+  ul: 'bullet_list',
+  ol: 'ordered_list'
+}
+
 export default function editor(whitelist = [], location) {
+  if (includes(whitelist, 'ul') || includes(whitelist, 'ol')) {
+    whitelist.push('p')
+  }
+  let content = whitelist
+    .map(x => m[x])
+    .filter(Boolean)
+    .filter((v, i, a) => a.indexOf(v) === i)
+  if (content.length === 0) content = ['inline']
+
   let schema = {
     nodes: {
       text: {
         group: 'inline'
       },
       doc: {
-        content:
-          // TODO
-          includes(whitelist, 'p') || includes(whitelist, 'h1')
-            ? 'block*'
-            : 'inline*'
+        content: 'inline*'
       }
     },
     marks: {}
@@ -119,23 +141,34 @@ export default function editor(whitelist = [], location) {
   let pmSchema = new Schema(schema)
 
   // lists
-  let nodes = addListNodes(pmSchema.spec.nodes, 'block*', 'block')
-  nodes = nodes.update('doc', { content: 'block*' })
-  console.log(nodes)
-  // console.dir(nodes)
+  let nodes = pmSchema.spec.nodes
+  if (includes(whitelist, 'ul') || includes(whitelist, 'ol')) {
+    nodes = addListNodes(nodes, 'block+', 'block')
+  }
+  nodes = nodes.update('doc', { content: '(' + content.join('|') + ')*' })
+
   pmSchema = new Schema({ nodes, marks: schema.marks })
-  kmap['Enter'] = splitListItem(pmSchema.nodes.list_item)
-  items.push({
-    name: 'ul',
-    command: wrapInList(pmSchema.nodes.bullet_list),
-    active: state => {
-      let { $from, to, node } = state.selection
-      if (node) return node.hasMarkup(pmSchema.nodes.list_item)
-      return (
-        to <= $from.end() && $from.parent.hasMarkup(pmSchema.nodes.list_item)
-      )
-    }
-  })
+
+  if (includes(whitelist, 'ul')) {
+    items.push({
+      name: 'ul',
+      command: wrapInList(pmSchema.nodes.bullet_list)
+    })
+  }
+  if (includes(whitelist, 'ol')) {
+    items.push({
+      name: 'ol',
+      command: wrapInList(pmSchema.nodes.ordered_list)
+    })
+  }
+  if (includes(whitelist, 'ul') || includes(whitelist, 'ol')) {
+    kmap['Enter'] = splitListItem(pmSchema.nodes.list_item)
+    items.push({
+      name: 'lift',
+      command: lift,
+      enabled: lift
+    })
+  }
 
   if (includes(whitelist, 'b') || includes(whitelist, 'strong')) {
     kmap['Mod-b'] = toggleMark(pmSchema.marks.strong)
@@ -225,7 +258,10 @@ export default function editor(whitelist = [], location) {
                       editorView.focus()
                       item.command(...args)
                     },
-                    active: item.active(editorView.state)
+                    active: item.active ? item.active(editorView.state) : false,
+                    enabled: item.enabled
+                      ? item.enabled(editorView.state)
+                      : true
                   }))
                 })
             }
@@ -248,7 +284,12 @@ export default function editor(whitelist = [], location) {
                       this.spec.editorView.focus()
                       item.command(...args)
                     },
-                    active: item.active(this.spec.editorView.state)
+                    active: item.active
+                      ? item.active(this.spec.editorView.state)
+                      : false,
+                    enabled: item.enabled
+                      ? item.enabled(this.spec.editorView.state)
+                      : true
                   }))
                 })
             }
