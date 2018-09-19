@@ -1,15 +1,32 @@
+let m = {
+  p: 'paragraph',
+  h1: 'heading',
+  h2: 'heading',
+  h3: 'heading',
+  h4: 'heading',
+  h5: 'heading',
+  h6: 'heading',
+  ul: 'bullet_list',
+  ol: 'ordered_list'
+}
+
 export default function editor(prosemirror, whitelist = [], location) {
+  if (includes(whitelist, 'ul') || includes(whitelist, 'ol')) {
+    whitelist.push('p')
+  }
+  let content = whitelist
+    .map(x => m[x])
+    .filter(Boolean)
+    .filter((v, i, a) => a.indexOf(v) === i)
+  if (content.length === 0) content = ['inline']
+
   let schema = {
     nodes: {
       text: {
         group: 'inline'
       },
       doc: {
-        content:
-          // TODO
-          includes(whitelist, 'p') || includes(whitelist, 'h1')
-            ? 'block*'
-            : 'inline*'
+        content: 'inline*'
       }
     },
     marks: {}
@@ -109,22 +126,36 @@ export default function editor(prosemirror, whitelist = [], location) {
   let pmSchema = new prosemirror.model.Schema(schema)
 
   // lists
-  /*let nodes = addListNodes(pmSchema.spec.nodes, 'inline*', 'block')
-  nodes = nodes.update('doc', { content: 'block*' })
-  console.log(nodes)
-  // console.dir(nodes)
-  pmSchema = new Schema({ nodes, marks: schema.marks })
-  items.push({
-    command: wrapInList(pmSchema.nodes.bullet_list),
-    active: state => {
-      let { $from, to, node } = state.selection
-      if (node) return node.hasMarkup(pmSchema.nodes.list_item)
-      return (
-        to <= $from.end() && $from.parent.hasMarkup(pmSchema.nodes.list_item)
-      )
-    },
-    dom: icon('ul')
-  })*/
+  let nodes = pmSchema.spec.nodes
+  if (includes(whitelist, 'ul') || includes(whitelist, 'ol')) {
+    nodes = prosemirror.schemaList.addListNodes(nodes, 'block+', 'block')
+  }
+  nodes = nodes.update('doc', { content: '(' + content.join('|') + ')*' })
+
+  pmSchema = new prosemirror.model.Schema({ nodes, marks: schema.marks })
+
+  if (includes(whitelist, 'ul')) {
+    items.push({
+      name: 'ul',
+      command: prosemirror.schemaList.wrapInList(pmSchema.nodes.bullet_list)
+    })
+  }
+  if (includes(whitelist, 'ol')) {
+    items.push({
+      name: 'ol',
+      command: prosemirror.schemaList.wrapInList(pmSchema.nodes.ordered_list)
+    })
+  }
+  if (includes(whitelist, 'ul') || includes(whitelist, 'ol')) {
+    kmap['Enter'] = prosemirror.schemaList.splitListItem(
+      pmSchema.nodes.list_item
+    )
+    items.push({
+      name: 'lift',
+      command: prosemirror.commands.lift,
+      enabled: prosemirror.commands.lift
+    })
+  }
 
   if (includes(whitelist, 'b') || includes(whitelist, 'strong')) {
     kmap['Mod-b'] = prosemirror.commands.toggleMark(pmSchema.marks.strong)
@@ -182,8 +213,8 @@ export default function editor(prosemirror, whitelist = [], location) {
   return {
     schema: pmSchema,
     plugins: [
-      prosemirror.keymap.keymap(prosemirror.commands.baseKeymap),
       prosemirror.keymap.keymap(kmap),
+      prosemirror.keymap.keymap(prosemirror.commands.baseKeymap),
       new prosemirror.state.Plugin({
         view(editorView) {
           this.editorView = editorView
@@ -203,6 +234,7 @@ export default function editor(prosemirror, whitelist = [], location) {
               //       active: item.active(editorView.state)
               //     }))
               //   })
+              window.updateHighlight()
               if (whitelist.length === 0) return
               window.parent &&
                 window.parent.Expose &&
@@ -215,7 +247,10 @@ export default function editor(prosemirror, whitelist = [], location) {
                       editorView.focus()
                       item.command(...args)
                     },
-                    active: item.active(editorView.state)
+                    active: item.active ? item.active(editorView.state) : false,
+                    enabled: item.enabled
+                      ? item.enabled(editorView.state)
+                      : true
                   }))
                 })
             }
@@ -238,7 +273,10 @@ export default function editor(prosemirror, whitelist = [], location) {
                       editorView.focus()
                       item.command(...args)
                     },
-                    active: item.active(editorView.state)
+                    active: item.active ? item.active(editorView.state) : false,
+                    enabled: item.enabled
+                      ? item.enabled(editorView.state)
+                      : true
                   }))
                 })
             }

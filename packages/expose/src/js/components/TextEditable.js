@@ -23,8 +23,10 @@ export default class TextEditable extends React.Component {
                   key={command.name}
                   className={
                     'appearance-none relative w-1/6 flex items-center justify-center border-0 rounded-none p-0 bg-transparent' +
-                    (command.active ? ' is-active' : '')
+                    (command.active ? ' is-active ' : '') +
+                    (command.enabled ? '' : ' cursor-not-allowed ')
                   }
+                  disabled={!command.enabled}
                   onMouseDown={e => {
                     e.preventDefault()
                     command.command(
@@ -36,8 +38,9 @@ export default class TextEditable extends React.Component {
                 >
                   <Icon
                     className={
-                      'relative z-10 ' +
-                      (command.active ? 'fill-white' : 'fill-purple-dark')
+                      'relative z-10' +
+                      (command.active ? ' fill-white ' : ' fill-purple-dark ') +
+                      (command.enabled ? '' : ' opacity-25 ')
                     }
                   />
                 </button>
