@@ -12,7 +12,8 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "5.7.*",
         "laravel/tinker": "^1.0",
-        "parallax/expose": "dev-master"
+        "parallax/expose": "dev-master",
+        "parallax/laravel-js-views": "dev-master"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
@@ -64,6 +65,10 @@
         {
             "type": "path",
             "url": "../expose"
+        },
+        {
+            "url": "https://github.com/parallax/laravel-js-views.git",
+            "type": "git"
         }
     ]
 }

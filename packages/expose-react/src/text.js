@@ -5,6 +5,8 @@ import dlv from 'dlv'
 import dset from 'dset'
 import editor from './editor.js'
 
+let root = typeof window === 'undefined' ? global : window
+
 // let schema = new Schema({
 //   nodes: {
 //     doc: { content: 'text*' },
@@ -24,7 +26,7 @@ class TextContainer extends Container {
     this.location = location
   }
   set = value => {
-    dset(window.expose.data, this.location, value)
+    dset(root.Expose.data, this.location, value)
     this.setState({ value })
   }
 }
@@ -34,18 +36,18 @@ class Foo extends Component {
   constructor(props) {
     super(props)
     let container
-    if (window.expose.containers[`${props.location}.${props.name}`]) {
+    if (root.Expose.containers[`${props.location}.${props.name}`]) {
       console.log('yeah')
-      container = window.expose.containers[`${props.location}.${props.name}`]
+      container = root.Expose.containers[`${props.location}.${props.name}`]
     } else {
-      container = window.expose.containers[
+      container = root.Expose.containers[
         `${props.location}.${props.name}`
       ] = new TextContainer(this.getValue(), `${props.location}.${props.name}`)
     }
     this.state = { container }
   }
   componentDidMount() {
-    window.parent.Expose.loadProseMirror().then(prosemirror => {
+    root.parent.Expose.loadProseMirror().then(prosemirror => {
       this.prosemirror = prosemirror
 
       let { schema, plugins } = editor(
@@ -104,7 +106,7 @@ class Foo extends Component {
   }
   getValue() {
     return dlv(
-      window.expose.data,
+      root.Expose.data,
       `${this.props.location}.${this.props.name}`,
       'Lorem ipsum'
     )

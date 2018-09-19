@@ -5,6 +5,8 @@ import Location from './location.js'
 import dset from 'dset'
 import dlv from 'dlv'
 
+let root = typeof window === 'undefined' ? global : window
+
 class RepeaterContainer extends Container {
   constructor(initialValue, location) {
     super()
@@ -24,7 +26,7 @@ class RepeaterContainer extends Container {
       } else {
         nextValue.push({ name, $children: {} })
       }
-      dset(window.expose.data, this.location, nextValue)
+      dset(root.Expose.data, this.location, nextValue)
       return { value: nextValue }
     }, this.broadcast)
   }
@@ -32,7 +34,7 @@ class RepeaterContainer extends Container {
     this.setState(state => {
       let nextValue = state.value.concat([])
       nextValue.splice(to, 0, nextValue.splice(from, 1)[0])
-      dset(window.expose.data, location, nextValue)
+      dset(root.Expose.data, location, nextValue)
       return { value: nextValue }
     })
   }
@@ -44,10 +46,10 @@ class RepeaterInner extends Component {
     let location = appendLocation(props.location, props.name)
     this.location = location
     let container
-    if (window.expose.containers[location]) {
-      container = window.expose.containers[location]
+    if (root.Expose.containers[location]) {
+      container = root.Expose.containers[location]
     } else {
-      container = window.expose.containers[location] = new RepeaterContainer(
+      container = root.Expose.containers[location] = new RepeaterContainer(
         this.getValue(),
         location
       )
@@ -56,7 +58,7 @@ class RepeaterInner extends Component {
     this.dragging = false
   }
   getValue() {
-    return dlv(window.expose.data, this.location, [])
+    return dlv(root.Expose.data, this.location, [])
   }
   componentDidUpdate() {
     this.state.container.set(this.getValue())

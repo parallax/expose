@@ -4,6 +4,8 @@ import { Subscribe, Container } from './unstated.js'
 import dlv from 'dlv'
 import dset from 'dset'
 
+let root = typeof window === 'undefined' ? global : window
+
 class EditableContainer extends Container {
   constructor(initialValue, location) {
     super()
@@ -14,10 +16,10 @@ class EditableContainer extends Container {
   }
   set = (key, value) => {
     if (typeof value === 'undefined') {
-      dset(window.expose.data, this.location, key)
+      dset(root.Expose.data, this.location, key)
       this.setState({ value: key })
     } else {
-      dset(window.expose.data, `${this.location}.${key}`, value)
+      dset(root.Expose.data, `${this.location}.${key}`, value)
       this.setState(state => {
         return {
           value: {
@@ -34,10 +36,10 @@ class Foo extends Component {
   constructor(props) {
     super(props)
     let container
-    if (window.expose.containers[`${props.location}.${props.name}`]) {
-      container = window.expose.containers[`${props.location}.${props.name}`]
+    if (root.Expose.containers[`${props.location}.${props.name}`]) {
+      container = root.Expose.containers[`${props.location}.${props.name}`]
     } else {
-      container = window.expose.containers[
+      container = root.Expose.containers[
         `${props.location}.${props.name}`
       ] = new EditableContainer(
         this.getValue(),
@@ -82,7 +84,7 @@ class Foo extends Component {
   getValue() {
     return filter(
       this.props.props,
-      dlv(window.expose.data, `${this.props.location}.${this.props.name}`, {})
+      dlv(root.Expose.data, `${this.props.location}.${this.props.name}`, {})
     )
   }
   componentDidUpdate() {
