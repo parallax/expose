@@ -4,8 +4,7 @@ import Location from './location.js'
 import dlv from 'dlv'
 import dset from 'dset'
 import editor from './editor.js'
-
-let root = typeof window === 'undefined' ? global : window
+import { root, isAdmin } from './util.js'
 
 // let schema = new Schema({
 //   nodes: {
@@ -35,6 +34,9 @@ class Foo extends Component {
   editing = false
   constructor(props) {
     super(props)
+
+    if (!isAdmin) return
+
     let container
     if (root.Expose.containers[`${props.location}.${props.name}`]) {
       console.log('yeah')
@@ -47,6 +49,8 @@ class Foo extends Component {
     this.state = { container }
   }
   componentDidMount() {
+    if (!isAdmin) return
+
     root.parent.Expose.loadProseMirror().then(prosemirror => {
       this.prosemirror = prosemirror
 
@@ -134,17 +138,27 @@ class Foo extends Component {
   }
   render() {
     let Tag = this.props.as || 'div'
+    let style = {
+      wordWrap: 'break-word',
+      whiteSpace: 'pre-wrap',
+      WebkitFontVariantLigatures: 'none',
+      fontVariantLigatures: 'none'
+    }
+
+    if (!isAdmin) {
+      return (
+        <Tag
+          style={style}
+          dangerouslySetInnerHTML={{ __html: this.getValue() }}
+        />
+      )
+    }
 
     return (
       <Subscribe to={[this.state.container]}>
         {c => (
           <Tag
-            style={{
-              wordWrap: 'break-word',
-              whiteSpace: 'pre-wrap',
-              WebkitFontVariantLigatures: 'none',
-              fontVariantLigatures: 'none'
-            }}
+            style={style}
             onBlur={() => {
               this.editing = false
               c.set(this.editor.dom.innerHTML)

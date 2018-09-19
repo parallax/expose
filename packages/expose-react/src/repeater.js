@@ -4,8 +4,10 @@ import Sortable from './sortable.js'
 import Location from './location.js'
 import dset from 'dset'
 import dlv from 'dlv'
+import { root, isAdmin } from './util.js'
 
-let root = typeof window === 'undefined' ? global : window
+let Wrapper = ({ condition, ifTrue, ifFalse, children }) =>
+  condition ? ifTrue(children) : ifFalse(children)
 
 class RepeaterContainer extends Container {
   constructor(initialValue, location) {
@@ -70,59 +72,77 @@ class RepeaterInner extends Component {
           let variantCount = {}
 
           return (
-            <Sortable
-              {...this.props}
-              data-expose-repeater={this.props.location}
-              onStart={() => {
-                this.dragging = true
-              }}
-              onEnd={() => {
-                this.dragging = false
-              }}
-              onChange={(order, sortable, e) => {
-                c.move(
-                  e.oldIndex,
-                  e.newIndex,
-                  appendLocation(this.props.location, this.props.name)
-                )
-              }}
-              onMouseOver={e => {
-                if (this.dragging) return
-                let v = e.target.closest(
-                  `[data-expose-repeater="${this.props.location}"] > *`
-                )
-                if (!v) return
+            <Wrapper
+              condition={isAdmin}
+              ifTrue={children => (
+                <Sortable
+                  {...this.props}
+                  data-expose-repeater={this.props.location}
+                  onStart={() => {
+                    this.dragging = true
+                  }}
+                  onEnd={() => {
+                    this.dragging = false
+                  }}
+                  onChange={(order, sortable, e) => {
+                    c.move(
+                      e.oldIndex,
+                      e.newIndex,
+                      appendLocation(this.props.location, this.props.name)
+                    )
+                  }}
+                  onMouseOver={e => {
+                    if (this.dragging) return
+                    let v = e.target.closest(
+                      `[data-expose-repeater="${this.props.location}"] > *`
+                    )
+                    if (!v) return
 
-                e.stopPropagation()
+                    e.stopPropagation()
 
-                window.setHighlightedElement(v, {
-                  variantIndex: getElementIndex(v),
-                  variants: this.props.children.map(n => n.attributes.name),
-                  stateContainer: c,
-                  editableProps: null
-                })
-                // let rect = v.getBoundingClientRect()
-                // window.setHighlightState({
-                //   variantIndex: getElementIndex(v),
-                //   variants: this.props.children.map(n => n.attributes.name),
-                //   stateContainer: c,
-                //   styles: {
-                //     top: `${rect.top - 10 + window.pageYOffset}px`,
-                //     left: `${rect.left - 10}px`,
-                //     width: `${rect.width + 20}px`,
-                //     height: `${rect.height + 20}px`
-                //   }
-                // })
-              }}
-            >
-              {c.state.value.length === 0 ? (
-                <button
-                  onClick={() => {
-                    c.add('text')
+                    window.setHighlightedElement(v, {
+                      variantIndex: getElementIndex(v),
+                      variants: this.props.children.map(n => n.attributes.name),
+                      stateContainer: c,
+                      editableProps: null
+                    })
+                    // let rect = v.getBoundingClientRect()
+                    // window.setHighlightState({
+                    //   variantIndex: getElementIndex(v),
+                    //   variants: this.props.children.map(n => n.attributes.name),
+                    //   stateContainer: c,
+                    //   styles: {
+                    //     top: `${rect.top - 10 + window.pageYOffset}px`,
+                    //     left: `${rect.left - 10}px`,
+                    //     width: `${rect.width + 20}px`,
+                    //     height: `${rect.height + 20}px`
+                    //   }
+                    // })
                   }}
                 >
-                  add
-                </button>
+                  {children}
+                </Sortable>
+              )}
+              ifFalse={children => (
+                <Wrapper
+                  condition={c.state.value.length === 0}
+                  ifTrue={e => e[0]}
+                  ifFalse={e => <div {...this.props}>{e}</div>}
+                >
+                  {children}
+                </Wrapper>
+              )}
+            >
+              {c.state.value.length === 0 ? (
+                isAdmin ? (
+                  <button
+                    onClick={() => {
+                      c.add('text')
+                    }}
+                  >
+                    add
+                  </button>
+                ) : null
               ) : (
                 c.state.value.map((v, i) => {
                   variantCount[v.name] =
@@ -147,7 +167,7 @@ class RepeaterInner extends Component {
                   )
                 })
               )}
-            </Sortable>
+            </Wrapper>
           )
         }}
       </Subscribe>

@@ -1,6 +1,7 @@
 let root = typeof window === 'undefined' ? global : window
 
 root.Expose = root.Expose || {
+  isAdmin: false,
   containers: {},
   data: {}
 }

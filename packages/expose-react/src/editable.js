@@ -3,8 +3,7 @@ import Location from './location.js'
 import { Subscribe, Container } from './unstated.js'
 import dlv from 'dlv'
 import dset from 'dset'
-
-let root = typeof window === 'undefined' ? global : window
+import { root, isAdmin } from './util.js'
 
 class EditableContainer extends Container {
   constructor(initialValue, location) {
@@ -48,16 +47,20 @@ class Foo extends Component {
     }
     this.state = { container }
 
-    this.foo = e => {
-      console.log('hmmm')
-      window.setHighlightedElement(e.target, {
-        location: `${props.location}.${props.name}`,
-        editableProps: this.props.props,
-        editableStateContainer: this.state.container
-      })
+    if (isAdmin) {
+      this.foo = e => {
+        console.log('hmmm')
+        window.setHighlightedElement(e.target, {
+          location: `${props.location}.${props.name}`,
+          editableProps: this.props.props,
+          editableStateContainer: this.state.container
+        })
+      }
     }
   }
   componentDidMount() {
+    if (!isAdmin) return
+
     if (this.props.isPage) {
       window.parent &&
         window.parent.Expose &&
@@ -77,7 +80,7 @@ class Foo extends Component {
     }
   }
   componentWillUnmount() {
-    if (!this.props.isPage) {
+    if (isAdmin && !this.props.isPage) {
       this.base.removeEventListener('mouseenter', this.foo)
     }
   }
