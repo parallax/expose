@@ -10,11 +10,14 @@ let mix = require('laravel-mix')
  | file for the application as well as bundling up all the JS files.
  |
  */
+mix.extend('excludeExpose', config => {
+    config.module.rules[4].exclude = /(node_modules|bower_components|expose-react)/
+})
 
 mix.preact(
     'resources/js/app.js',
     'public/js'
-) /*.webpackConfig({
+).excludeExpose() /*.webpackConfig({
     resolve: {
         alias: {
             react: 'preact-compat',
