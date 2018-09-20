@@ -45,7 +45,11 @@ class RepeaterContainer extends Container {
 class RepeaterInner extends Component {
   constructor(props) {
     super(props)
-    this.location = joinLocation(props.location, props.name)
+
+    this.location = props.model
+      ? joinLocation('$models', props.model.$name, props.model.$id, props.name)
+      : joinLocation(props.location, props.name)
+
     let container
     if (root.Expose.containers[this.location]) {
       container = root.Expose.containers[this.location]

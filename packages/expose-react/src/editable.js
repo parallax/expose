@@ -35,7 +35,11 @@ class Foo extends Component {
   constructor(props) {
     super(props)
     let container
-    this.location = joinLocation(props.location, props.name)
+
+    this.location = props.model
+      ? joinLocation('$models', props.model.$name, props.model.$id, props.name)
+      : joinLocation(props.location, props.name)
+
     if (root.Expose.containers[this.location]) {
       container = root.Expose.containers[this.location]
     } else {
