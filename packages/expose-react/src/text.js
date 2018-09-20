@@ -5,6 +5,7 @@ import dlv from 'dlv'
 import dset from 'dset'
 import editor from './editor.js'
 import { root, isAdmin, joinLocation } from './util.js'
+import { EditableContainer } from './editable.js'
 
 // let schema = new Schema({
 //   nodes: {
@@ -39,17 +40,29 @@ class Foo extends Component {
       ? joinLocation('$models', props.model.$name, props.model.$id, props.name)
       : joinLocation(props.location, props.name)
 
+    let containerLocation = props.model
+      ? joinLocation('$models', props.model.$name, props.model.$id)
+      : this.location
+
     if (!isAdmin) return
 
     let container
 
-    if (root.Expose.containers[this.location]) {
-      container = root.Expose.containers[this.location]
+    if (root.Expose.containers[containerLocation]) {
+      container = root.Expose.containers[containerLocation]
     } else {
-      container = root.Expose.containers[this.location] = new TextContainer(
-        this.getValue(),
-        this.location
-      )
+      if (props.model) {
+        container = root.Expose.containers[
+          containerLocation
+        ] = new EditableContainer(
+          { [props.name]: this.getValue() },
+          this.location
+        )
+      } else {
+        container = root.Expose.containers[
+          containerLocation
+        ] = new TextContainer(this.getValue(), this.location)
+      }
     }
     this.state = { container }
   }
@@ -85,7 +98,11 @@ class Foo extends Component {
   }
   componentDidUpdate() {
     let val = this.getValue()
-    this.state.container.set(val)
+    if (this.props.model) {
+      this.state.container.set(this.props.name, val)
+    } else {
+      this.state.container.set(val)
+    }
 
     let dom = document.createElement('div')
     dom.innerHTML = val
@@ -162,13 +179,21 @@ class Foo extends Component {
             style={style}
             onBlur={() => {
               this.editing = false
-              c.set(this.editor.dom.innerHTML)
+              if (this.props.model) {
+                c.set(this.props.name, this.editor.dom.innerHTML)
+              } else {
+                c.set(this.editor.dom.innerHTML)
+              }
             }}
             onMouseEnter={() => {
               window.setHighlightedElement(this.root)
             }}
             onFocus={() => (this.editing = true)}
-            dangerouslySetInnerHTML={{ __html: c.state.value }}
+            dangerouslySetInnerHTML={{
+              __html: this.props.model
+                ? c.state.value[this.props.name]
+                : c.state.value
+            }}
             ref={ref =>
               (this.root = ref)
             } /*contentEditable onKeyUp={e => c.set(e.target.textContent)}*/

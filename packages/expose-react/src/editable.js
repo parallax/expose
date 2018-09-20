@@ -5,7 +5,7 @@ import dlv from 'dlv'
 import dset from 'dset'
 import { root, isAdmin, joinLocation } from './util.js'
 
-class EditableContainer extends Container {
+export class EditableContainer extends Container {
   constructor(initialValue, location) {
     super()
     this.state = {
