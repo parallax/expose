@@ -4,7 +4,7 @@ import Location from './location.js'
 import dlv from 'dlv'
 import dset from 'dset'
 import editor from './editor.js'
-import { root, isAdmin } from './util.js'
+import { root, isAdmin, joinLocation } from './util.js'
 
 // let schema = new Schema({
 //   nodes: {
@@ -35,16 +35,20 @@ class Foo extends Component {
   constructor(props) {
     super(props)
 
+    this.location = joinLocation(props.location, props.name)
+
     if (!isAdmin) return
 
     let container
-    if (root.Expose.containers[`${props.location}.${props.name}`]) {
+
+    if (root.Expose.containers[this.location]) {
       console.log('yeah')
-      container = root.Expose.containers[`${props.location}.${props.name}`]
+      container = root.Expose.containers[this.location]
     } else {
-      container = root.Expose.containers[
-        `${props.location}.${props.name}`
-      ] = new TextContainer(this.getValue(), `${props.location}.${props.name}`)
+      container = root.Expose.containers[this.location] = new TextContainer(
+        this.getValue(),
+        this.location
+      )
     }
     this.state = { container }
   }
@@ -57,7 +61,7 @@ class Foo extends Component {
       let { schema, plugins } = editor(
         prosemirror,
         this.props.allow || [],
-        `${this.props.location}.${this.props.name}`
+        this.location
       )
       this.schema = schema
       this.plugins = plugins
@@ -109,11 +113,7 @@ class Foo extends Component {
     // )
   }
   getValue() {
-    return dlv(
-      root.Expose.data,
-      `${this.props.location}.${this.props.name}`,
-      'Lorem ipsum'
-    )
+    return dlv(root.Expose.data, this.location, 'Lorem ipsum')
   }
   shouldComponentUpdate() {
     if (!this.prosemirror) return false

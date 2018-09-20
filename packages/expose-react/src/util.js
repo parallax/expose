@@ -3,4 +3,8 @@ import dlv from 'dlv'
 let root = typeof window === 'undefined' ? global : window
 let isAdmin = dlv(root, 'Expose.isAdmin', false)
 
-export { root, isAdmin }
+function joinLocation(...locations) {
+  return locations.filter(x => x !== '').join('.')
+}
+
+export { root, isAdmin, joinLocation }

@@ -3,7 +3,7 @@ import Location from './location.js'
 import { Subscribe, Container } from './unstated.js'
 import dlv from 'dlv'
 import dset from 'dset'
-import { root, isAdmin } from './util.js'
+import { root, isAdmin, joinLocation } from './util.js'
 
 class EditableContainer extends Container {
   constructor(initialValue, location) {
@@ -18,7 +18,7 @@ class EditableContainer extends Container {
       dset(root.Expose.data, this.location, key)
       this.setState({ value: key })
     } else {
-      dset(root.Expose.data, `${this.location}.${key}`, value)
+      dset(root.Expose.data, joinLocation(this.location, key), value)
       this.setState(state => {
         return {
           value: {
@@ -35,14 +35,13 @@ class Foo extends Component {
   constructor(props) {
     super(props)
     let container
-    if (root.Expose.containers[`${props.location}.${props.name}`]) {
-      container = root.Expose.containers[`${props.location}.${props.name}`]
+    this.location = joinLocation(props.location, props.name)
+    if (root.Expose.containers[this.location]) {
+      container = root.Expose.containers[this.location]
     } else {
-      container = root.Expose.containers[
-        `${props.location}.${props.name}`
-      ] = new EditableContainer(
+      container = root.Expose.containers[this.location] = new EditableContainer(
         this.getValue(),
-        `${props.location}.${props.name}`
+        this.location
       )
     }
     this.state = { container }
@@ -51,7 +50,7 @@ class Foo extends Component {
       this.foo = e => {
         console.log('hmmm')
         window.setHighlightedElement(e.target, {
-          location: `${props.location}.${props.name}`,
+          location: this.location,
           editableProps: this.props.props,
           editableStateContainer: this.state.container
         })
@@ -64,14 +63,12 @@ class Foo extends Component {
     if (this.props.isPage) {
       window.parent &&
         window.parent.Expose &&
-        window.parent.Expose.setPage(
-          `${this.props.location}.${this.props.name}`
-        )
+        window.parent.Expose.setPage(this.location)
 
       window.parent &&
         window.parent.Expose &&
         window.parent.Expose.setEditableOptions({
-          location: `${this.props.location}.${this.props.name}`,
+          location: this.location,
           options: this.props.props,
           stateContainer: this.state.container
         })
@@ -85,10 +82,7 @@ class Foo extends Component {
     }
   }
   getValue() {
-    return filter(
-      this.props.props,
-      dlv(root.Expose.data, `${this.props.location}.${this.props.name}`, {})
-    )
+    return filter(this.props.props, dlv(root.Expose.data, this.location, {}))
   }
   componentDidUpdate() {
     this.state.container.set(this.getValue())

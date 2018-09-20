@@ -4,7 +4,7 @@ import Sortable from './sortable.js'
 import Location from './location.js'
 import dset from 'dset'
 import dlv from 'dlv'
-import { root, isAdmin } from './util.js'
+import { root, isAdmin, joinLocation } from './util.js'
 
 let Wrapper = ({ condition, ifTrue, ifFalse, children }) =>
   condition ? ifTrue(children) : ifFalse(children)
@@ -45,15 +45,14 @@ class RepeaterContainer extends Container {
 class RepeaterInner extends Component {
   constructor(props) {
     super(props)
-    let location = appendLocation(props.location, props.name)
-    this.location = location
+    this.location = joinLocation(props.location, props.name)
     let container
-    if (root.Expose.containers[location]) {
-      container = root.Expose.containers[location]
+    if (root.Expose.containers[this.location]) {
+      container = root.Expose.containers[this.location]
     } else {
-      container = root.Expose.containers[location] = new RepeaterContainer(
+      container = root.Expose.containers[this.location] = new RepeaterContainer(
         this.getValue(),
-        location
+        this.location
       )
     }
     this.state = { container }
@@ -85,11 +84,7 @@ class RepeaterInner extends Component {
                     this.dragging = false
                   }}
                   onChange={(order, sortable, e) => {
-                    c.move(
-                      e.oldIndex,
-                      e.newIndex,
-                      appendLocation(this.props.location, this.props.name)
-                    )
+                    c.move(e.oldIndex, e.newIndex, this.location)
                   }}
                   onMouseOver={e => {
                     if (this.dragging) return
@@ -152,10 +147,7 @@ class RepeaterInner extends Component {
 
                   return (
                     <Location.Provider
-                      value={appendLocation(
-                        this.props.location,
-                        `${this.props.name}.${i}.$children`
-                      )}
+                      value={joinLocation(this.location, i, '$children')}
                     >
                       {cloneElement(
                         this.props.children.filter(
@@ -191,9 +183,4 @@ function getElementIndex(node) {
     index++
   }
   return index
-}
-
-function appendLocation(currentLocation, add) {
-  if (currentLocation === '') return add
-  return `${currentLocation}.${add}`
 }
