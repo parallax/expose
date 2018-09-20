@@ -13,7 +13,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        config([
+            'js-views.globals.Expose.isAdmin' => substr(request()->path(), 0, 7) === 'nocache'
+        ]);
     }
 
     /**
