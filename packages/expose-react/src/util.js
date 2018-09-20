@@ -9,4 +9,16 @@ function joinLocation(...locations) {
     .join('.')
 }
 
-export { root, isAdmin, joinLocation }
+let baseStyles = { all: 'initial', boxSizing: 'border-box' }
+
+let buttonReset = {
+  WebkitAppearance: 'none',
+  MozAppearance: 'none',
+  appearance: 'none',
+  WebkitUserSelect: 'none',
+  MozUserSelect: 'none',
+  MsUserSelect: 'none',
+  userSelect: 'none'
+}
+
+export { root, isAdmin, joinLocation, baseStyles, buttonReset }

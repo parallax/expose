@@ -160,16 +160,12 @@ class Foo extends Component {
       wordWrap: 'break-word',
       whiteSpace: 'pre-wrap',
       WebkitFontVariantLigatures: 'none',
-      fontVariantLigatures: 'none'
+      fontVariantLigatures: 'none',
+      outline: 'none'
     }
 
     if (!isAdmin) {
-      return (
-        <Tag
-          style={style}
-          dangerouslySetInnerHTML={{ __html: this.getValue() }}
-        />
-      )
+      return <Tag dangerouslySetInnerHTML={{ __html: this.getValue() }} />
     }
 
     return (

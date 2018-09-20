@@ -1,4 +1,5 @@
 import { h, Component } from 'preact'
+import { baseStyles, buttonReset } from './util.js'
 
 export default class Highlighter extends Component {
   constructor(props) {
@@ -67,7 +68,9 @@ export default class Highlighter extends Component {
   render() {
     return this.state.styles ? (
       <div
+        className="Expose-highlight"
         style={{
+          ...baseStyles,
           position: 'absolute',
           border: '1px dashed #8360d6',
           pointerEvents: 'none',
@@ -78,6 +81,7 @@ export default class Highlighter extends Component {
           (this.state.showVariantList ? (
             <ul
               style={{
+                ...baseStyles,
                 listStyle: 'none',
                 position: 'absolute',
                 top: '100%',
@@ -96,7 +100,8 @@ export default class Highlighter extends Component {
                   <button
                     type="button"
                     style={{
-                      appearance: 'none',
+                      ...baseStyles,
+                      ...buttonReset,
                       display: 'block',
                       width: '100%',
                       padding: '0 18px',
@@ -128,7 +133,8 @@ export default class Highlighter extends Component {
             <button
               type="button"
               style={{
-                appearance: 'none',
+                ...baseStyles,
+                ...buttonReset,
                 position: 'absolute',
                 bottom: -16,
                 right: -16,
@@ -164,6 +170,7 @@ export default class Highlighter extends Component {
         {this.state.editableProps && (
           <div
             style={{
+              ...baseStyles,
               position: 'absolute',
               top: -1,
               left: -32,
@@ -176,7 +183,8 @@ export default class Highlighter extends Component {
               class="expose-show-editable-popout"
               type="button"
               style={{
-                appearance: 'none',
+                ...baseStyles,
+                ...buttonReset,
                 width: 32,
                 height: 32,
                 background: this.state.active ? '#8360d6' : '#453f56',
@@ -208,6 +216,7 @@ export default class Highlighter extends Component {
             >
               <div
                 style={{
+                  ...baseStyles,
                   position: 'absolute',
                   top: 0,
                   right: 0,
@@ -222,8 +231,9 @@ export default class Highlighter extends Component {
                   width={16}
                   height={16}
                   viewBox="0 0 24 24"
-                  fill="#fff"
                   style={{
+                    ...baseStyles,
+                    fill: '#fff',
                     transition: 'opacity 0.25s, transform 0.25s',
                     opacity: this.state.active ? 1 : 0,
                     transform: this.state.active ? '' : 'scale(0.8)'
@@ -234,6 +244,7 @@ export default class Highlighter extends Component {
               </div>
               <div
                 style={{
+                  ...baseStyles,
                   position: 'absolute',
                   top: 0,
                   right: 0,
@@ -248,8 +259,9 @@ export default class Highlighter extends Component {
                   width={16}
                   height={16}
                   viewBox="0 0 20 20"
-                  fill="#fff"
                   style={{
+                    ...baseStyles,
+                    fill: '#fff',
                     transition: 'opacity 0.25s, transform 0.25s',
                     opacity: this.state.active ? 0 : 1,
                     transform: this.state.active ? 'scale(0.8)' : ''
