@@ -105,7 +105,7 @@ class App extends React.Component {
       navigate('/text-editable/' + a.location)
     })
   }
-  updateTextEditable = ({ location, editor, commands }, cb) => {
+  updateTextEditable = ({ location, editor, commands, dropdown }, cb) => {
     this.setState(
       state => ({
         manageFocus: false,
@@ -115,7 +115,8 @@ class App extends React.Component {
           ...state.textEditables,
           [location]: {
             editorView: editor,
-            commands
+            commands,
+            dropdown
           }
         }
       }),

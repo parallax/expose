@@ -20,6 +20,7 @@
     "babel-loader": "^8.0.2",
     "css-loader": "^1.0.0",
     "debounce": "^1.2.0",
+    "dlv": "^1.1.2",
     "moment": "^2.22.2",
     "postcss-loader": "^3.0.0",
     "prosemirror-commands": "^1.0.7",

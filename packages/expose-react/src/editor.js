@@ -33,6 +33,7 @@ export default function editor(prosemirror, whitelist = [], location) {
   }
   let kmap = {}
   let items = []
+  let dropdown = []
 
   // paragraph
   if (includes(whitelist, 'p')) {
@@ -137,12 +138,14 @@ export default function editor(prosemirror, whitelist = [], location) {
   if (includes(whitelist, 'ul')) {
     items.push({
       name: 'ul',
+      prettyName: 'Unordered List',
       command: prosemirror.schemaList.wrapInList(pmSchema.nodes.bullet_list)
     })
   }
   if (includes(whitelist, 'ol')) {
     items.push({
       name: 'ol',
+      prettyName: 'Ordered List',
       command: prosemirror.schemaList.wrapInList(pmSchema.nodes.ordered_list)
     })
   }
@@ -152,6 +155,7 @@ export default function editor(prosemirror, whitelist = [], location) {
     )
     items.push({
       name: 'lift',
+      prettyName: 'Lift',
       command: prosemirror.commands.lift,
       enabled: prosemirror.commands.lift
     })
@@ -161,6 +165,7 @@ export default function editor(prosemirror, whitelist = [], location) {
     kmap['Mod-b'] = prosemirror.commands.toggleMark(pmSchema.marks.strong)
     items.push({
       name: 'b',
+      prettyName: 'Bold',
       command: kmap['Mod-b'],
       active: state => markActive(state, pmSchema.marks.strong)
     })
@@ -170,6 +175,7 @@ export default function editor(prosemirror, whitelist = [], location) {
     kmap['Mod-i'] = prosemirror.commands.toggleMark(pmSchema.marks.em)
     items.push({
       name: 'i',
+      prettyName: 'Italic',
       command: kmap['Mod-i'],
       active: state => markActive(state, pmSchema.marks.em)
     })
@@ -178,8 +184,9 @@ export default function editor(prosemirror, whitelist = [], location) {
   // paragraph
   if (includes(whitelist, 'p')) {
     let pCommand = prosemirror.commands.setBlockType(pmSchema.nodes.paragraph)
-    items.push({
+    dropdown.push({
       name: 'p',
+      prettyName: 'Paragraph',
       command: pCommand,
       active: state => {
         let { $from, to, node } = state.selection
@@ -196,8 +203,9 @@ export default function editor(prosemirror, whitelist = [], location) {
     let command = prosemirror.commands.setBlockType(pmSchema.nodes.heading, {
       level: h
     })
-    items.push({
+    dropdown.push({
       name: `h${h}`,
+      prettyName: `Heading ${h}`,
       command: command,
       active: state => {
         let { $from, to, node } = state.selection
@@ -209,6 +217,8 @@ export default function editor(prosemirror, whitelist = [], location) {
       }
     })
   })
+
+  let selection
 
   return {
     schema: pmSchema,
@@ -235,12 +245,30 @@ export default function editor(prosemirror, whitelist = [], location) {
               //     }))
               //   })
               window.updateHighlight()
-              if (whitelist.length === 0) return
+              if (
+                document.activeElement !== editorView.dom ||
+                whitelist.length === 0
+              )
+                return
               window.parent &&
                 window.parent.Expose &&
                 window.parent.Expose.updateTextEditable({
                   location,
                   editor: editorView,
+                  dropdown: dropdown.map(item => ({
+                    ...item,
+                    command: (state, dispatch, view) => {
+                      let nextState = state.apply(
+                        state.tr.setSelection(selection)
+                      )
+                      view.focus()
+                      item.command(nextState, dispatch, view)
+                    },
+                    active: item.active ? item.active(editorView.state) : false,
+                    enabled: item.enabled
+                      ? item.enabled(editorView.state)
+                      : true
+                  })),
                   commands: items.map(item => ({
                     ...item,
                     command: (...args) => {
@@ -279,6 +307,9 @@ export default function editor(prosemirror, whitelist = [], location) {
                       : true
                   }))
                 })
+            },
+            blur(view) {
+              selection = view.state.selection
             }
           }
         }
