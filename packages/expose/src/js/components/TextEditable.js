@@ -3,12 +3,19 @@ import Page from './Page.js'
 import BackLink from './BackLink.js'
 import icons from '../icons.js'
 import dlv from 'dlv'
+import Select from 'react-select'
 
 export default class TextEditable extends React.Component {
   render() {
-    let { editorView, commands, dropdown } = this.props.textEditables[
+    let { editorView, commands, dropdown = [] } = this.props.textEditables[
       this.props.loc
     ]
+
+    let options = dropdown.map(command => ({
+      value: command.name,
+      label: command.prettyName,
+      active: command.active
+    }))
 
     return (
       <Page>
@@ -16,23 +23,35 @@ export default class TextEditable extends React.Component {
         <h2>Text Editable</h2>
         {dropdown &&
           dropdown.length > 0 && (
-            <select
-              onChange={e => {
+            <Select
+              styles={{
+                control: (base, { isFocused }) => ({
+                  ...base,
+                  background: isFocused ? 'white' : 'transparent',
+                  borderColor: isFocused ? '#282828' : '#453f56',
+                  boxShadow: 'none',
+                  ':hover': { borderColor: '#453f56', background: 'white' }
+                }),
+                option: (base, { isFocused, isSelected }) => ({
+                  ...base,
+                  background: isSelected
+                    ? '#7d63ce'
+                    : isFocused
+                      ? '#eae8ec'
+                      : 'transparent'
+                }),
+                indicatorSeparator: () => ({ display: 'none' })
+              }}
+              options={options}
+              onChange={({ value }) => {
                 dropdown
-                  .filter(x => x.name === e.target.value)[0]
+                  .filter(x => x.name === value)[0]
                   .command(editorView.state, editorView.dispatch, editorView)
               }}
-              value={dlv(dropdown.filter(x => x.active), '0.name', '')}
-            >
-              <option value="" disabled>
-                Type
-              </option>
-              {dropdown.map(command => (
-                <option key={command.name} value={command.name}>
-                  {command.prettyName}
-                </option>
-              ))}
-            </select>
+              value={options.filter(x => x.active)[0] || null}
+              placeholder="Type"
+              isSearchable={false}
+            />
           )}
         <div className="btn-group flex border border-purple-dark rounded">
           <div
