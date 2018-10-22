@@ -246,10 +246,14 @@ export default function editor(prosemirror, whitelist = [], location) {
               //   })
               window.updateHighlight()
               if (
-                document.activeElement !== editorView.dom ||
-                whitelist.length === 0
+                whitelist.length === 0 ||
+                !editorView.hasFocus() ||
+                !document.activeElement.classList.contains(
+                  'ProseMirror-focused'
+                )
               )
                 return
+
               window.parent &&
                 window.parent.Expose &&
                 window.parent.Expose.updateTextEditable({
